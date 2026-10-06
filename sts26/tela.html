@@ -7,26 +7,33 @@
   /* Telas cheias 1920×1080 (Web Browser input do vMix).
      ?t=comecaremos | intervalo | dividida
      &dia=1|2|3  fixa o dia   ·   &sala=CODIGO  segue o dia escolhido no controle
+     comecaremos é animada num ciclo de 15 s (&anim=0 deixa parada).
      As janelas de câmera (intervalo/dividida) são transparentes: ponha a câmera numa camada ABAIXO desta tela. */
   * { margin: 0; padding: 0; box-sizing: border-box; }
   html, body { width: 100%; height: 100%; overflow: hidden; background: transparent; }
   body.fundo { background: repeating-conic-gradient(#3a3f4a 0 25%, #2c3039 0 50%) 0 0 / 40px 40px; }
-  #palco { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; transform-origin: 0 0; }
-  #palco img { position: absolute; inset: 0; width: 1920px; height: 1080px; transition: opacity .8s ease; }
-  /* ponto vermelho do "Começaremos em breve" pulsando por cima do da arte */
+  body.cheia { background: #3154a1; }
+  #palco { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; transform-origin: 0 0; overflow: hidden; }
+  #palco > img.tela { position: absolute; inset: 0; width: 1920px; height: 1080px; transition: opacity .8s ease; }
+  #palco .c { position: absolute; display: block; will-change: transform, opacity; }
+  /* ponto vermelho do "Começaremos em breve" com onda */
   .pulso { position: absolute; left: 1394px; top: 835px; width: 29px; height: 29px; border-radius: 50%; }
   .pulso::before, .pulso::after { content: ""; position: absolute; inset: 0; border-radius: 50%; background: #ff0a3c; }
-  .pulso::after { animation: pulso 1.6s ease-out infinite; }
+  .pulso::after { animation: pulso 1.5s ease-out infinite; }
   @keyframes pulso { from { transform: scale(1); opacity: .7; } to { transform: scale(2.6); opacity: 0; } }
+  .brilho { position: absolute; left: 120px; top: 335px; width: 793px; height: 310px; pointer-events: none;
+    -webkit-mask: url(img/anim/logo.png) no-repeat 0 0 / 100% 100%; mask: url(img/anim/logo.png) no-repeat 0 0 / 100% 100%;
+    background: linear-gradient(105deg, transparent 42%, rgba(255,255,255,.85) 50%, transparent 58%) no-repeat; background-size: 300% 100%; background-position: 100% 0; }
 </style>
 </head>
 <body>
 <div id="palco"></div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-<script src="../comum/gc.js?v=20261006a"></script>
+<script src="../comum/gc.js?v=20261006b"></script>
 <script>
 const q = new URLSearchParams(location.search);
 const T = ['comecaremos', 'intervalo', 'dividida'].includes(q.get('t')) ? q.get('t') : 'comecaremos';
+const ANIM = T === 'comecaremos' && q.get('anim') !== '0';
 if (q.get('fundo') === '1') document.body.classList.add('fundo');
 const palco = document.getElementById('palco');
 function ajusta() {
@@ -35,16 +42,131 @@ function ajusta() {
 }
 addEventListener('resize', ajusta); ajusta();
 
-// pré-carrega os 3 dias pra troca não piscar
-const imgs = [1, 2, 3].map(d => { const i = new Image(); i.src = `img/tela-${T}-dia${d}.png`; i.alt = ''; i.style.opacity = 0; palco.appendChild(i); return i; });
-if (T === 'comecaremos') palco.insertAdjacentHTML('beforeend', '<div class="pulso"></div>');
-let atual = 0;
-function dia(d) {
-  d = Math.min(3, Math.max(1, parseInt(d) || 1));
-  if (d === atual) return;
-  atual = d;
-  imgs.forEach((im, i) => im.style.opacity = i + 1 === d ? 1 : 0);
+let dia = () => {};
+
+if (!ANIM) {
+  // ---------- telas paradas (PNG por dia, pré-carregados pra troca não piscar) ----------
+  const imgs = [1, 2, 3].map(d => { const i = new Image(); i.src = `img/tela-${T}-dia${d}.png`; i.alt = ''; i.className = 'tela'; i.style.opacity = 0; palco.appendChild(i); return i; });
+  if (T === 'comecaremos') palco.insertAdjacentHTML('beforeend', '<div class="pulso"></div>');
+  let atual = 0;
+  dia = d => {
+    d = Math.min(3, Math.max(1, parseInt(d) || 1));
+    if (d === atual) return;
+    atual = d;
+    imgs.forEach((im, i) => im.style.opacity = i + 1 === d ? 1 : 0);
+  };
+} else {
+  // ---------- tela inicial animada: ciclo de 15 s (entra, respira, sai) ----------
+  document.body.classList.add('cheia');
+  const CICLO = 15000;
+  // posição de cada camada no quadro (tirada do PSD por ferramentas/extrair-sts26.py)
+  const G = {
+    bg: [0, 0], 'bg-dia3': [-168, -95], logo: [120, 335], 'setas-topo': [1676, -370], 'setas-base': [60, 828],
+    'seta-menor': [56, 98], 'seta-maior': [905, 634], 'txt-cobertura': [1313, 464], 'txt-comecaremos': [1438, 827],
+    caixa: [1550, 361], dia: [1590, 383],
+  };
+  const camada = (arq, pos) => {
+    const im = new Image(); im.src = `img/anim/${arq}.png`; im.alt = ''; im.className = 'c';
+    im.style.left = pos[0] + 'px'; im.style.top = pos[1] + 'px'; palco.appendChild(im); return im;
+  };
+  const el = {
+    bg: camada('bg-dia1', G.bg),
+    setasTopo: camada('setas-topo', G['setas-topo']),
+    setasBase: camada('setas-base', G['setas-base']),
+    setaMenor: camada('seta-menor', G['seta-menor']),
+    setaMaior: camada('seta-maior', G['seta-maior']),
+    logo: camada('logo', G.logo),
+    caixa: camada('caixa-dia1', G.caixa),
+    dia: camada('dia1', G.dia),
+    cobertura: camada('txt-cobertura', G['txt-cobertura']),
+    comecaremos: camada('txt-comecaremos', G['txt-comecaremos']),
+  };
+  palco.insertAdjacentHTML('beforeend', '<div class="brilho c"></div><div class="pulso c"></div>');
+  el.brilho = palco.querySelector('.brilho');
+  el.ponto = palco.querySelector('.pulso');
+
+  const SAI = 'cubic-bezier(.22,.9,.24,1)', ENTRA = 'cubic-bezier(.6,0,.8,.3)', SUAVE = 'ease-in-out';
+  // trilha = [[segundo, {props}, easing do trecho seguinte?], ...] → uma animação de 15 s em loop
+  function trilha(alvo, pontos) {
+    const kf = pontos.map(([s, p, e]) => ({ offset: s * 1000 / CICLO, ...p, easing: e || SUAVE }));
+    if (kf[0].offset > 0) kf.unshift({ ...kf[0], offset: 0 });
+    if (kf[kf.length - 1].offset < 1) kf.push({ ...kf[kf.length - 1], offset: 1 });
+    return alvo.animate(kf, { duration: CICLO, iterations: Infinity, fill: 'both' });
+  }
+  const tr = (x, y, extra = '') => `translate(${x}px, ${y}px) ${extra}`.trim();
+  const off = { opacity: 0 }, on = { opacity: 1 };
+  // "cutucadas" na direção da seta, de tempos em tempos
+  function cutuca(ini, fim, cada, dx, dy) {
+    const p = [];
+    for (let s = ini; s + .9 <= fim; s += cada) {
+      p.push([s, { transform: tr(0, 0), ...on }], [s + .35, { transform: tr(dx, dy), ...on }, SAI], [s + .9, { transform: tr(0, 0), ...on }]);
+    }
+    return p;
+  }
+
+  function monta() {
+    // fundo: passeio lento (começa e termina igual → loop sem emenda)
+    trilha(el.bg, [[0, { transform: 'scale(1.07) translate(0,0)' }], [7.5, { transform: 'scale(1.07) translate(-38px,-20px)' }], [15, { transform: 'scale(1.07) translate(0,0)' }]]);
+
+    trilha(el.setaMenor, [
+      [0.15, { ...off, transform: tr(80, 80) }, SAI], [0.95, { ...on, transform: tr(0, 0) }],
+      ...cutuca(3, 13, 3, -16, -16),
+      [13.9, { ...on, transform: tr(0, 0) }, ENTRA], [14.5, { ...off, transform: tr(-70, -70) }]]);
+    trilha(el.setaMaior, [
+      [0.55, { ...off, transform: tr(-140, -140) }, SAI], [1.45, { ...on, transform: tr(0, 0) }],
+      ...cutuca(4.5, 13, 3, 18, 18),
+      [13.8, { ...on, transform: tr(0, 0) }, ENTRA], [14.4, { ...off, transform: tr(110, 110) }]]);
+    trilha(el.setasTopo, [
+      [0, { ...off, transform: tr(0, -220) }, SAI], [1.2, { ...on, transform: tr(0, 0) }],
+      [7.6, { ...on, transform: tr(0, 34) }], [13.6, { ...on, transform: tr(0, 0) }, ENTRA], [14.5, { ...off, transform: tr(0, -220) }]]);
+    trilha(el.setasBase, [
+      [0.1, { ...off, transform: tr(-260, 0) }, SAI], [1.3, { ...on, transform: tr(0, 0) }],
+      [7.6, { ...on, transform: tr(36, 0) }], [13.6, { ...on, transform: tr(0, 0) }, ENTRA], [14.5, { ...off, transform: tr(-260, 0) }]]);
+
+    trilha(el.logo, [
+      [0.45, { ...off, transform: 'scale(.9)', filter: 'blur(14px)' }, SAI], [1.5, { ...on, transform: 'scale(1)', filter: 'blur(0px)' }],
+      [7.5, { ...on, transform: 'scale(1.015)', filter: 'blur(0px)' }], [13.7, { ...on, transform: 'scale(1)', filter: 'blur(0px)' }, ENTRA],
+      [14.4, { ...off, transform: 'scale(.95)', filter: 'blur(10px)' }]]);
+    // brilho passando no logo 2 vezes
+    trilha(el.brilho, [[0, { backgroundPosition: '100% 0' }], [5.2, { backgroundPosition: '100% 0' }, 'ease-in-out'], [6.3, { backgroundPosition: '0% 0' }],
+      [10.4, { backgroundPosition: '100% 0' }, 'ease-in-out'], [11.5, { backgroundPosition: '0% 0' }], [11.51, { backgroundPosition: '100% 0' }]]);
+
+    // coluna da direita (alinhada à direita: tudo entra vindo da direita)
+    trilha(el.caixa, [
+      [0.95, { clipPath: 'inset(0 0 0 100%)' }, SAI], [1.45, { clipPath: 'inset(0 0 0 0%)' }],
+      [13.6, { clipPath: 'inset(0 0 0 0%)' }, ENTRA], [14.05, { clipPath: 'inset(0 0 0 100%)' }]]);
+    trilha(el.dia, [
+      [1.25, { ...off, transform: tr(0, 12) }, SAI], [1.7, { ...on, transform: tr(0, 0) }],
+      [13.5, { ...on, transform: tr(0, 0) }, ENTRA], [13.85, { ...off, transform: tr(0, -10) }]]);
+    trilha(el.cobertura, [
+      [1.15, { ...off, transform: tr(70, 0), filter: 'blur(10px)' }, SAI], [2.0, { ...on, transform: tr(0, 0), filter: 'blur(0px)' }],
+      [13.7, { ...on, transform: tr(0, 0), filter: 'blur(0px)' }, ENTRA], [14.25, { ...off, transform: tr(50, 0), filter: 'blur(8px)' }]]);
+    trilha(el.comecaremos, [
+      [1.55, { ...off, transform: tr(0, 26) }, SAI], [2.35, { ...on, transform: tr(0, 0) }],
+      [13.8, { ...on, transform: tr(0, 0) }, ENTRA], [14.3, { ...off, transform: tr(0, 20) }]]);
+    trilha(el.ponto, [
+      [2.1, { ...off, transform: 'scale(0)' }, 'cubic-bezier(.34,1.56,.64,1)'], [2.5, { ...on, transform: 'scale(1)' }],
+      [13.85, { ...on, transform: 'scale(1)' }, ENTRA], [14.15, { ...off, transform: 'scale(0)' }]]);
+  }
+
+  let atual = 0;
+  dia = d => {
+    d = Math.min(3, Math.max(1, parseInt(d) || 1));
+    if (d === atual) return;
+    atual = d;
+    el.bg.src = `img/anim/bg-dia${d}.png`;
+    const p = d === 3 ? G['bg-dia3'] : G.bg;
+    el.bg.style.left = p[0] + 'px'; el.bg.style.top = p[1] + 'px';
+    el.caixa.src = `img/anim/caixa-dia${d}.png`;
+    el.dia.src = `img/anim/dia${d}.png`;
+  };
+  dia(q.get('dia') || 1);
+  // pré-carrega tudo antes de começar (o ciclo nasce sincronizado) e avisa o exportador de vídeo
+  const todas = [...palco.querySelectorAll('img')].map(i => i.decode().catch(() => {}));
+  [1, 2, 3].forEach(d => ['bg', 'caixa', ''].forEach(p => { const i = new Image(); i.src = `img/anim/${p ? p + '-' : ''}dia${d}.png`; }));
+  Promise.all(todas).then(() => { monta(); window.pronto = true; });
 }
+
 dia(q.get('dia') || 1);
 if (!q.get('dia') && GC.ativo()) { GC.on('estado', e => dia(e.dia)); GC.iniciar(); }
 </script>

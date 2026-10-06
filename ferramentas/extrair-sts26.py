@@ -100,6 +100,27 @@ for i, d in enumerate(['DIA 1', 'DIA 2', 'DIA 3'], 1):
             cola(base, l)
     salva(base.convert('RGB'), f'tela-comecaremos-dia{i}.png')
 
+    # camadas soltas da tela inicial para a animação (tela.html?t=comecaremos)
+    # comuns aos 3 dias: tiradas do DIA 1; por dia: fundo, caixa do DIA e texto do DIA
+    os.makedirs(os.path.join(OUT, 'anim'), exist_ok=True)
+    camadas = {}
+    def solta(layer, nome):
+        im = layer.topil().convert('RGBA')
+        im.save(os.path.join(OUT, 'anim', nome + '.png'), optimize=True)
+        camadas[nome] = [layer.left, layer.top, im.size[0], im.size[1]]
+    a1, a2 = acha(g, 'Agrupar 1'), acha(g, 'Agrupar 2')
+    solta(acha(g, 'BG'), f'bg-dia{i}')
+    solta(acha(a1, 'Retângulo 1'), f'caixa-dia{i}')
+    solta(acha(a1, f'DIA {i}'), f'dia{i}')
+    if i == 1:
+        for n, arq in [('LOGO-COBERTURA', 'logo'), ('SETAS TOPO', 'setas-topo'), ('SETAS BASE', 'setas-base'),
+                       ('SETA-MENOR', 'seta-menor'), ('SETOR-MAIOR', 'seta-maior')]:
+            solta(acha(g, n), arq)
+        solta(acha(a1, 'Cobertura SIARÁ TECH SUMMIT ‘26'), 'txt-cobertura')
+        solta(acha(a2, 'Começaremos em breve'), 'txt-comecaremos')
+        solta(acha(a2, 'Elipse 1'), 'ponto')
+    janelas.setdefault('anim', {}).update(camadas)
+
 psd = PSDImage.open(os.path.join(AQUI, 'TELA-INTERVALO-CAMERAFIXA.psd'))
 art = psd[0]
 for i in (1, 2, 3):
@@ -116,8 +137,9 @@ art = psd[0]
 for i in (1, 2, 3):
     g = acha(art, f'DIVIDIDA-DIA {i}')
     base = Image.new('RGBA', (W, H), (0, 0, 0, 0))
-    # tarja tema vira peça dinâmica (overlay); logo-cobertura fica escondido como no DIA 3 do designer
-    compoe(g, base, pular=('TARJA-TEMA', 'LOGO-COBERTURA'))
+    # tarja tema vira peça dinâmica (overlay); logo-cobertura fica escondido como no DIA 3 do designer;
+    # o AO VIVO saiu a pedido (06/10) — quem quiser liga o mosquito no centro pelo controle
+    compoe(g, base, pular=('TARJA-TEMA', 'LOGO-COBERTURA', 'AO VIVO'))
     telas = acha(g, 'TELAS')
     rs = [acha(telas, n) for n in ('Retângulo 2', 'Retângulo 2 copiar', 'Retângulo 2 copiar 2')]
     furos(base, rs)
