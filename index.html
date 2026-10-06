@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Projetos · urb.NEWS e FUTEBORA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400..900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="comum/site.css?v=20261006a">
+<style>
+  .intro { padding: 40px 0 8px; }
+  .intro p { color: var(--mut); margin-top: 10px; max-width: 620px; font-size: 17px; }
+  .filtros { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 22px; align-items: center; }
+  .filtros .btn.on { background: var(--tx); color: var(--bg); border-color: var(--tx); }
+  .filtros .campo { margin-left: auto; width: 220px; }
+  @media (max-width: 640px) { .filtros .campo { margin-left: 0; width: 100%; } }
+  .marca-cab { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+  .marca-cab i { width: 12px; height: 34px; border-radius: 4px; }
+  .marca-cab h2 { margin: 0; }
+  .proj { padding: 0; overflow: hidden; text-decoration: none; display: flex; flex-direction: column; transition: transform .15s, border-color .15s; }
+  .proj:hover { transform: translateY(-2px); border-color: rgba(255,255,255,.25); }
+  .proj .capa { aspect-ratio: 16/9; background: var(--card2) center / cover no-repeat; position: relative; }
+  .proj .capa .chip { position: absolute; left: 10px; top: 10px; background: rgba(11,16,32,.8); }
+  .proj .capa .chip.on { background: rgba(11,16,32,.8); }
+  .proj .corpo { padding: 14px 16px 16px; display: flex; flex-direction: column; gap: 6px; flex: 1; }
+  .proj h3 { font-size: 19px; font-weight: 800; line-height: 1.2; }
+  .proj .tipo { font-size: 12px; font-weight: 700; letter-spacing: 1px; color: var(--mut); text-transform: uppercase; }
+  .proj p { color: var(--mut); font-size: 14px; flex: 1; }
+  .tags { display: flex; gap: 5px; flex-wrap: wrap; margin-top: 4px; }
+  .tags span { font-size: 12px; padding: 2px 8px; border-radius: 6px; background: var(--card2); color: var(--mut); }
+  .vazio { border: 1px dashed var(--line); border-radius: var(--r); padding: 26px; color: var(--mut); text-align: center; font-size: 14px; }
+</style>
+</head>
+<body>
+<header class="topo"><div class="wrap">
+  <a class="marca" href="./">urb<span>/projetos</span></a>
+  <nav id="nav"></nav>
+</div></header>
+
+<main class="wrap">
+  <div class="intro">
+    <h1>Catálogo de projetos</h1>
+    <p>Programas e eventos da urb.NEWS e do FUTEBORA. Cada projeto reúne formatos base, telas e peças para o vMix e o controle ao vivo.</p>
+    <div class="filtros" id="filtros">
+      <button class="btn on" data-f="">Todos</button>
+      <button class="btn" data-f="Programa">Programas</button>
+      <button class="btn" data-f="Evento">Eventos</button>
+      <input class="campo" id="busca" placeholder="Buscar projeto…" autocomplete="off">
+    </div>
+  </div>
+  <div id="lista"></div>
+</main>
+
+<footer class="rodape"><div class="wrap">Grupo Urbmídia · urb.NEWS · FUTEBORA</div></footer>
+
+<script src="projetos.js?v=20261006a"></script>
+<script>
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+let filtro = '';
+$('nav').innerHTML = MARCAS.map(m => `<a href="#${m.id}">${esc(m.nome)}</a>`).join('');
+
+function desenha() {
+  const b = $('busca').value.trim().toLowerCase();
+  $('lista').innerHTML = MARCAS.map(m => {
+    const ps = PROJETOS.filter(p => p.marca === m.id && (!filtro || p.tipo === filtro)
+      && (!b || [p.nome, p.resumo, ...(p.itens || [])].join(' ').toLowerCase().includes(b)));
+    const externo = u => /^https?:/.test(u);
+    return `<section class="bloco" id="${m.id}">
+      <div class="marca-cab"><i style="background:${m.cor}"></i><div><h2>${esc(m.nome)}</h2><div class="sub">${esc(m.desc)}</div></div></div>
+      ${ps.length ? `<div class="grade">${ps.map(p => `
+        <a class="card proj" href="${esc(p.url)}" ${externo(p.url) ? 'target="_blank" rel="noopener"' : ''}>
+          <div class="capa" style="background-image:url('${esc(p.capa)}')"><span class="chip ${p.status === 'Ativo' ? 'on' : ''}">${esc(p.status)}</span></div>
+          <div class="corpo">
+            <span class="tipo">${esc(p.tipo)} · ${p.ano}</span>
+            <h3>${esc(p.nome)}${externo(p.url) ? ' ↗' : ''}</h3>
+            <p>${esc(p.resumo)}</p>
+            <div class="tags">${(p.itens || []).map(i => `<span>${esc(i)}</span>`).join('')}</div>
+          </div>
+        </a>`).join('')}</div>`
+      : `<div class="vazio">${filtro || b ? 'Nenhum projeto com esse filtro.' : 'Nenhum projeto cadastrado ainda.'}</div>`}
+    </section>`;
+  }).join('');
+}
+$('filtros').onclick = e => {
+  const x = e.target.closest('[data-f]'); if (!x) return;
+  filtro = x.dataset.f;
+  $('filtros').querySelectorAll('[data-f]').forEach(y => y.classList.toggle('on', y === x));
+  desenha();
+};
+$('busca').oninput = desenha;
+desenha();
+</script>
+</body>
+</html>

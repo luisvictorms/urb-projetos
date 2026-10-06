@@ -1,0 +1,400 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0d1633">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Controle · Siará Tech Summit 26</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400..900&display=swap" rel="stylesheet">
+<style>
+  :root { --bg: #0d1633; --bg2: #070c1f; --card: rgba(255,255,255,.055); --line: rgba(255,255,255,.13); --tx: #f3f5fb; --mut: #9aa6c7;
+    --azul: #426fd6; --azul2: #3154a1; --rosa: #eb0284; --verde: #01fd5f; --alerta: #ffb020; }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  body { font-family: Figtree, system-ui, sans-serif; color: var(--tx); min-height: 100vh;
+    background: radial-gradient(ellipse at 20% -10%, #24398a 0, var(--bg) 45%, var(--bg2));
+    padding: max(14px, env(safe-area-inset-top)) 16px max(24px, env(safe-area-inset-bottom)); }
+  header { display: flex; align-items: center; gap: 12px; max-width: 1180px; margin: 0 auto 14px; }
+  header img { width: 46px; height: 46px; }
+  header h1 { font-size: 17px; font-weight: 800; line-height: 1.15; }
+  header h1 small { display: block; font-size: 12px; font-weight: 600; color: var(--mut); letter-spacing: .5px; }
+  .con { margin-left: auto; font-size: 12px; font-weight: 700; color: var(--mut); white-space: nowrap; }
+  .con i { display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: #f85149; margin-right: 6px; vertical-align: 0; }
+  .con.ok i { background: var(--verde); box-shadow: 0 0 10px var(--verde); }
+  main { max-width: 1180px; margin: 0 auto; display: grid; gap: 16px; }
+  @media (min-width: 980px) { main.op { grid-template-columns: 1.05fr 1fr; align-items: start; } }
+  .col { display: grid; gap: 14px; min-width: 0; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 14px; min-width: 0; }
+  .card.noar { border-color: var(--rosa); box-shadow: 0 0 0 1px var(--rosa) inset, 0 0 26px rgba(235,2,132,.18); }
+  .tit { display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 800; letter-spacing: 2px; color: var(--mut); margin-bottom: 10px; }
+  .tag { margin-left: auto; font-size: 11px; letter-spacing: 1px; padding: 4px 9px; border-radius: 99px; background: rgba(255,255,255,.08); color: var(--mut); }
+  .tag.on { background: var(--rosa); color: #fff; }
+  select, input, textarea { width: 100%; font: inherit; font-size: 16px; color: var(--tx); background: rgba(0,0,0,.28);
+    border: 1px solid var(--line); border-radius: 11px; padding: 12px; outline: none; }
+  select:focus, input:focus, textarea:focus { border-color: var(--azul); }
+  textarea { resize: vertical; min-height: 64px; }
+  option { background: #121c3f; }
+  .prev { margin: 10px 0; padding: 10px 12px; border-radius: 11px; background: linear-gradient(100deg, var(--azul), var(--azul2)); min-height: 62px; }
+  .prev b { display: block; font-size: 17px; line-height: 1.2; }
+  .prev span { display: block; font-size: 14px; opacity: .9; line-height: 1.3; margin-top: 2px; }
+  .prev.vazio { background: rgba(255,255,255,.04); color: var(--mut); font-size: 14px; display: flex; align-items: center; }
+  .linha { display: grid; grid-template-columns: 54px 1fr 1fr 54px; gap: 8px; }
+  button { font: inherit; font-weight: 800; color: var(--tx); background: rgba(255,255,255,.08); border: 1px solid var(--line);
+    border-radius: 12px; padding: 14px 10px; cursor: pointer; transition: transform .08s, background .15s; touch-action: manipulation; }
+  button:active { transform: scale(.96); }
+  button:disabled { opacity: .35; pointer-events: none; }
+  .entrar { background: var(--rosa); border-color: var(--rosa); font-size: 17px; letter-spacing: 1px; }
+  .sair { font-size: 17px; letter-spacing: 1px; }
+  .opcoes { display: flex; align-items: center; gap: 8px; margin-top: 10px; font-size: 13px; color: var(--mut); flex-wrap: wrap; }
+  .opcoes select { width: auto; padding: 7px 10px; font-size: 14px; }
+  .seg { display: inline-flex; background: rgba(0,0,0,.28); border: 1px solid var(--line); border-radius: 11px; padding: 3px; gap: 3px; }
+  .seg button { padding: 8px 12px; border: 0; background: transparent; font-size: 14px; border-radius: 8px; color: var(--mut); }
+  .seg button.on { background: var(--azul); color: #fff; }
+  .grade2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  @media (max-width: 520px) { .grade2 { grid-template-columns: 1fr; } }
+  .toggle { width: 100%; font-size: 18px; padding: 16px; }
+  .toggle.on { background: var(--verde); border-color: var(--verde); color: #04210f; }
+  .disparar { width: 100%; font-size: 18px; padding: 16px; background: var(--azul); border-color: var(--azul); }
+  .disparar.rodando { background: var(--rosa); border-color: var(--rosa); }
+  .panico { width: 100%; background: transparent; border: 1px dashed rgba(255,255,255,.3); color: var(--mut); font-size: 14px; letter-spacing: 1px; }
+  .msg { font-size: 13px; color: var(--mut); margin-top: 8px; min-height: 18px; }
+  .msg.erro { color: #ff7b72; }
+
+  /* lista */
+  .form { display: grid; gap: 8px; }
+  .form .seg { justify-self: start; }
+  .form .acoes { display: flex; gap: 8px; }
+  .form .acoes button { flex: 1; }
+  .add { background: var(--azul); border-color: var(--azul); }
+  .filtros { display: flex; gap: 8px; margin: 14px 0 8px; align-items: center; flex-wrap: wrap; }
+  .filtros input { flex: 1; min-width: 140px; padding: 9px 12px; font-size: 15px; }
+  ul { list-style: none; display: grid; gap: 8px; }
+  li { display: grid; grid-template-columns: 1fr auto; gap: 8px; align-items: center; padding: 10px 10px 10px 12px; border-radius: 12px;
+    background: rgba(0,0,0,.22); border: 1px solid transparent; }
+  li.sel { border-color: var(--azul); }
+  li.noar { border-color: var(--rosa); background: rgba(235,2,132,.12); }
+  li .tx { min-width: 0; cursor: pointer; }
+  li .tx b { display: block; font-size: 15px; line-height: 1.25; overflow-wrap: anywhere; }
+  li .tx > span { display: block; font-size: 13px; color: var(--mut); line-height: 1.3; overflow-wrap: anywhere; }
+  li .tp { display: inline-block; font-size: 10px; font-weight: 800; letter-spacing: 1px; padding: 2px 6px; border-radius: 5px; margin-right: 6px;
+    background: var(--azul2); color: #fff; vertical-align: 2px; }
+  li .tp.tema { background: #7a2a9a; }
+  li .bt { display: flex; gap: 4px; }
+  li .bt button { padding: 8px 9px; font-size: 14px; border-radius: 9px; min-width: 36px; }
+  .vazio-lista { text-align: center; color: var(--mut); font-size: 14px; padding: 18px 8px; }
+  .entrada { max-width: 420px; margin: 12vh auto 0; }
+  .entrada p { color: var(--mut); margin: 8px 0 14px; line-height: 1.5; }
+  .noar-resumo { font-size: 13px; color: var(--mut); line-height: 1.6; }
+  .noar-resumo b { color: var(--tx); }
+  kbd { font: 700 11px Figtree; border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 5px; padding: 1px 5px; color: var(--mut); }
+  .atalhos { font-size: 12px; color: var(--mut); text-align: center; margin-top: 4px; }
+  @media (hover: none) { .atalhos { display: none; } }
+</style>
+</head>
+<body>
+<header>
+  <img src="img/selo.png" alt="">
+  <h1 id="titulo">Controle ao vivo<small>SIARÁ TECH SUMMIT ‘26 · urb.NEWS</small></h1>
+  <div class="con" id="con"><i></i><span>conectando…</span></div>
+</header>
+<main id="app"></main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="../comum/gc.js?v=20261006a"></script>
+<script>
+const q = new URLSearchParams(location.search);
+const REDACAO = q.get('modo') === 'redacao';
+const app = document.getElementById('app');
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const mem = { get(k, d) { try { return localStorage.getItem('sts26.' + k) ?? d; } catch { return d; } },
+              set(k, v) { try { localStorage.setItem('sts26.' + k, v); } catch {} } };
+
+if (REDACAO) document.getElementById('titulo').firstChild.textContent = 'Redação · tarjas';
+
+// ---------- sem sala: pede o código ----------
+if (!GC.ativo()) {
+  document.getElementById('con').style.display = 'none';
+  app.innerHTML = `<div class="card entrada"><div class="tit">CÓDIGO DA SALA</div>
+    <p>Digite o código que a produção passou. Ele liga este controle às telas do vMix.</p>
+    <form id="fs"><input id="cod" autocomplete="off" autocapitalize="off" placeholder="ex.: sts26-xxxxxx" value="${esc(mem.get('sala', ''))}">
+    <button class="entrar" style="width:100%;margin-top:10px">Entrar</button></form></div>`;
+  document.getElementById('fs').onsubmit = e => {
+    e.preventDefault();
+    const c = document.getElementById('cod').value.trim();
+    if (c.length < 6) return;
+    mem.set('sala', c); q.set('sala', c); location.search = q.toString();
+  };
+  throw new Error('sem sala');
+}
+mem.set('sala', GC.sala);
+
+// ---------- montagem ----------
+const blocoTarja = (tipo, rot) => `
+  <section class="card" id="c-${tipo}">
+    <div class="tit">${rot}<span class="tag" id="tag-${tipo}">FORA</span></div>
+    <select id="sel-${tipo}"></select>
+    <div class="prev vazio" id="prev-${tipo}">Nenhuma tarja na lista ainda</div>
+    <div class="linha">
+      <button id="ant-${tipo}" title="Anterior">◀</button>
+      <button class="entrar" id="ent-${tipo}">ENTRAR</button>
+      <button class="sair" id="sai-${tipo}">SAIR</button>
+      <button id="prox-${tipo}" title="Próxima">▶</button>
+    </div>
+    <div class="opcoes">Saída automática
+      <select id="dur-${tipo}"><option value="0">manual</option><option value="5">5 s</option><option value="8">8 s</option><option value="10">10 s</option><option value="15">15 s</option><option value="20">20 s</option></select>
+      <span id="cont-${tipo}"></span>
+    </div>
+  </section>`;
+
+const blocoLista = `
+  <section class="card" id="c-lista">
+    <div class="tit">LISTA DE TARJAS<span class="tag" id="qtd">0</span></div>
+    <form class="form" id="form">
+      <div class="seg" id="f-tipo"><button type="button" data-v="nome" class="on">Nome</button><button type="button" data-v="tema">Tema</button></div>
+      <input id="f-tit" maxlength="160" placeholder="Nome da pessoa" autocomplete="off">
+      <textarea id="f-sub" maxlength="300" rows="2" placeholder="Cargo, empresa ou @perfil"></textarea>
+      <div class="acoes"><button class="add" id="f-ok">Adicionar à lista</button><button type="button" id="f-cancela" hidden>Cancelar</button></div>
+      <div class="msg" id="f-msg"></div>
+    </form>
+    <div class="filtros">
+      <div class="seg" id="filtro"><button data-v="" class="on">Todas</button><button data-v="nome">Nomes</button><button data-v="tema">Temas</button></div>
+      <input id="busca" placeholder="Buscar…" autocomplete="off">
+    </div>
+    <ul id="lista"></ul>
+  </section>`;
+
+if (REDACAO) {
+  app.innerHTML = `<div class="col"><section class="card"><div class="tit">NO AR AGORA</div><div class="noar-resumo" id="resumo"></div></section>${blocoLista}</div>`;
+} else {
+  app.className = 'op';
+  app.innerHTML = `
+  <div class="col">
+    ${blocoTarja('nome', 'TARJA NOME')}
+    ${blocoTarja('tema', 'TARJA TEMA')}
+    <div class="grade2">
+      <section class="card" id="c-mosq">
+        <div class="tit">MOSQUITO AO VIVO</div>
+        <button class="toggle" id="mosq">DESLIGADO</button>
+        <div class="opcoes">Posição <div class="seg" id="mosqPos"><button data-v="esq">Esq</button><button data-v="centro">Centro</button><button data-v="dir">Dir</button></div></div>
+      </section>
+      <section class="card" id="c-insc">
+        <div class="tit">INSCREVA-SE</div>
+        <button class="disparar" id="insc">▶ DISPARAR</button>
+        <div class="opcoes">Posição <div class="seg" id="inscPos"><button data-v="esq">Esq</button><button data-v="dir">Dir</button></div></div>
+      </section>
+    </div>
+    <section class="card">
+      <div class="tit">DIA DO EVENTO <span class="tag">TELAS</span></div>
+      <div class="seg" id="dia" style="display:flex"><button data-v="1" style="flex:1">DIA 1</button><button data-v="2" style="flex:1">DIA 2</button><button data-v="3" style="flex:1">DIA 3</button></div>
+    </section>
+    <button class="panico" id="panico">TIRAR TUDO DO AR</button>
+    <div class="msg" id="msg"></div>
+    <div class="atalhos"><kbd>N</kbd> entra nome · <kbd>T</kbd> entra tema · <kbd>Esc</kbd> tira tarjas · <kbd>M</kbd> mosquito · <kbd>I</kbd> inscreva-se · <kbd>↑</kbd><kbd>↓</kbd> troca tarja nome</div>
+  </div>
+  <div class="col">${blocoLista}</div>`;
+}
+
+const $ = id => document.getElementById(id);
+const msg = (t, erro) => { const m = $('msg') || $('f-msg'); if (m) { m.textContent = t || ''; m.classList.toggle('erro', !!erro); } };
+const tenta = fn => async (...a) => { try { await fn(...a); } catch (e) { msg('Não foi: ' + e.message, true); } };
+
+// ---------- conexão ----------
+GC.on('status', st => {
+  const ok = st === 'SUBSCRIBED';
+  $('con').classList.toggle('ok', ok);
+  $('con').querySelector('span').textContent = ok ? 'conectado · ' + GC.sala : (st === 'SEM_SALA' ? 'sem sala' : 'reconectando…');
+});
+
+// ---------- OPERADOR ----------
+const sel = { nome: mem.get('sel-nome', ''), tema: mem.get('sel-tema', '') };
+const doTipo = tipo => GC.tarjas.filter(t => t.tipo === tipo);
+const achar = id => GC.tarjas.find(t => String(t.id) === String(id));
+const noAr = tipo => { const d = GC.estado[tipo]; if (!d || !d.on) return false; if (d.dur > 0 && Date.now() > d.t + d.dur * 1000) return false; return true; };
+
+function desenhaTarjas() {
+  if (REDACAO) return;
+  for (const tipo of ['nome', 'tema']) {
+    const lista = doTipo(tipo), s = $('sel-' + tipo);
+    if (!lista.find(t => String(t.id) === String(sel[tipo]))) sel[tipo] = lista[0] ? String(lista[0].id) : '';
+    s.innerHTML = lista.length ? lista.map((t, i) => `<option value="${t.id}">${i + 1}. ${esc(t.titulo)}${t.subtitulo ? ' — ' + esc(t.subtitulo) : ''}</option>`).join('')
+                               : '<option value="">(lista vazia — cadastre na lista de tarjas)</option>';
+    s.value = sel[tipo];
+    const t = achar(sel[tipo]), p = $('prev-' + tipo);
+    p.classList.toggle('vazio', !t);
+    p.innerHTML = t ? `<b>${esc(t.titulo)}</b><span>${esc(t.subtitulo)}</span>` : 'Nenhuma tarja na lista ainda';
+    $('ent-' + tipo).disabled = !t;
+    $('ant-' + tipo).disabled = $('prox-' + tipo).disabled = lista.length < 2;
+  }
+  desenhaEstado();
+}
+
+function desenhaEstado() {
+  const e = GC.estado;
+  if (REDACAO) {
+    const r = [];
+    for (const [tipo, rot] of [['nome', 'Tarja nome'], ['tema', 'Tarja tema']]) {
+      r.push(noAr(tipo) ? `${rot}: <b>${esc(e[tipo].titulo)}</b>` : `${rot}: fora do ar`);
+    }
+    r.push('Mosquito: ' + (e.mosquito ? '<b>no ar</b>' : 'desligado'));
+    $('resumo').innerHTML = r.join('<br>');
+    desenhaLista();
+    return;
+  }
+  for (const tipo of ['nome', 'tema']) {
+    const on = noAr(tipo), d = e[tipo] || {};
+    $('c-' + tipo).classList.toggle('noar', on);
+    const tag = $('tag-' + tipo);
+    tag.classList.toggle('on', on);
+    tag.textContent = on ? 'NO AR' : 'FORA';
+    $('sai-' + tipo).disabled = !on;
+    // mostra qual está no ar se for diferente da selecionada
+    const c = $('cont-' + tipo);
+    if (on && d.dur > 0) c.textContent = `· sai em ${Math.max(0, Math.ceil((d.t + d.dur * 1000 - Date.now()) / 1000))} s`;
+    else if (on && String(d.id) !== String(sel[tipo])) c.textContent = '· no ar: ' + d.titulo;
+    else c.textContent = '';
+  }
+  const m = $('mosq');
+  m.classList.toggle('on', !!e.mosquito);
+  m.textContent = e.mosquito ? '● NO AR' : 'DESLIGADO';
+  $('c-mosq').classList.toggle('noar', !!e.mosquito);
+  marca('mosqPos', e.mosqPos || 'dir');
+  marca('inscPos', e.inscPos || 'dir');
+  marca('dia', String(e.dia || 1));
+  desenhaLista();
+}
+const marca = (id, v) => $(id).querySelectorAll('button').forEach(b => b.classList.toggle('on', b.dataset.v === v));
+
+if (!REDACAO) {
+  for (const tipo of ['nome', 'tema']) {
+    const outro = tipo === 'nome' ? 'tema' : 'nome';
+    const dur = $('dur-' + tipo);
+    dur.value = mem.get('dur-' + tipo, '0');
+    dur.onchange = () => mem.set('dur-' + tipo, dur.value);
+    $('sel-' + tipo).onchange = ev => { sel[tipo] = ev.target.value; mem.set('sel-' + tipo, sel[tipo]); desenhaTarjas(); };
+    const anda = passo => {
+      const l = doTipo(tipo); if (!l.length) return;
+      let i = l.findIndex(t => String(t.id) === String(sel[tipo]));
+      i = (i + passo + l.length) % l.length;
+      sel[tipo] = String(l[i].id); mem.set('sel-' + tipo, sel[tipo]); desenhaTarjas();
+    };
+    $('ant-' + tipo).onclick = () => anda(-1);
+    $('prox-' + tipo).onclick = () => anda(1);
+    $('ent-' + tipo).onclick = tenta(async () => {
+      const t = achar(sel[tipo]); if (!t) return;
+      const patch = {};
+      patch[tipo] = { on: true, t: Date.now(), id: t.id, titulo: t.titulo, subtitulo: t.subtitulo, dur: +dur.value };
+      if (noAr(outro)) patch[outro] = { ...GC.estado[outro], on: false }; // as duas tarjas ocupam a parte de baixo
+      await GC.mudar(patch); msg('');
+    });
+    $('sai-' + tipo).onclick = tenta(async () => { const p = {}; p[tipo] = { ...GC.estado[tipo], on: false }; await GC.mudar(p); });
+  }
+  $('mosq').onclick = tenta(() => GC.mudar({ mosquito: !GC.estado.mosquito }));
+  $('mosqPos').onclick = tenta(ev => ev.target.dataset.v && GC.mudar({ mosqPos: ev.target.dataset.v }));
+  $('inscPos').onclick = tenta(ev => ev.target.dataset.v && GC.mudar({ inscPos: ev.target.dataset.v }));
+  $('dia').onclick = tenta(ev => ev.target.dataset.v && GC.mudar({ dia: +ev.target.dataset.v }));
+  $('insc').onclick = tenta(async () => {
+    const b = $('insc');
+    if (b.classList.contains('rodando')) return;
+    await GC.disparar('inscreva');
+    b.classList.add('rodando'); b.textContent = '● RODANDO…';
+    setTimeout(() => { b.classList.remove('rodando'); b.textContent = '▶ DISPARAR'; }, 7800);
+  });
+  $('panico').onclick = tenta(() => GC.mudar({
+    nome: { ...GC.estado.nome, on: false }, tema: { ...GC.estado.tema, on: false }, mosquito: false }));
+
+  // atalhos de teclado (fora dos campos de texto)
+  addEventListener('keydown', ev => {
+    if (/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName) || ev.ctrlKey || ev.metaKey || ev.altKey) return;
+    const k = ev.key.toLowerCase();
+    if (k === 'n') $('ent-nome').click();
+    else if (k === 't') $('ent-tema').click();
+    else if (k === 'escape') { if (noAr('nome')) $('sai-nome').click(); if (noAr('tema')) $('sai-tema').click(); }
+    else if (k === 'm') $('mosq').click();
+    else if (k === 'i') $('insc').click();
+    else if (k === 'arrowdown') { ev.preventDefault(); $('prox-nome').click(); }
+    else if (k === 'arrowup') { ev.preventDefault(); $('ant-nome').click(); }
+  });
+  setInterval(desenhaEstado, 1000); // contagem da saída automática
+}
+
+// ---------- LISTA (redação e operador) ----------
+let fTipo = 'nome', editando = null, filtro = '';
+const PH = { nome: ['Nome da pessoa', 'Cargo, empresa ou @perfil'], tema: ['Título do tema', 'Subtítulo (até 2 linhas na tela)'] };
+function tipoForm(v) {
+  fTipo = v; marca('f-tipo', v);
+  $('f-tit').placeholder = PH[v][0]; $('f-sub').placeholder = PH[v][1];
+}
+$('f-tipo').onclick = ev => ev.target.dataset.v && tipoForm(ev.target.dataset.v);
+$('filtro').onclick = ev => { if (ev.target.dataset.v === undefined) return; filtro = ev.target.dataset.v; marca('filtro', filtro); desenhaLista(); };
+$('busca').oninput = desenhaLista;
+function limpaForm() {
+  editando = null; $('f-tit').value = ''; $('f-sub').value = '';
+  $('f-ok').textContent = 'Adicionar à lista'; $('f-cancela').hidden = true;
+}
+$('f-cancela').onclick = limpaForm;
+$('form').onsubmit = tenta(async ev => {
+  ev.preventDefault();
+  const titulo = $('f-tit').value.trim(), subtitulo = $('f-sub').value.trim().replace(/\s*\n\s*/g, ' ');
+  if (!titulo) { $('f-tit').focus(); return; }
+  // limpa na hora (quem digita rápido já começa a próxima); se der erro, devolve o texto
+  const id = editando, tipo = fTipo;
+  limpaForm(); $('f-tit').focus();
+  $('f-msg').classList.remove('erro'); $('f-msg').textContent = 'Salvando…';
+  try {
+    const r = await GC.salvarTarja({ id, tipo, titulo, subtitulo });
+    $('f-msg').textContent = id ? 'Tarja atualizada.' : `Adicionada: ${titulo}`;
+    if (!REDACAO && !id && !sel[tipo]) sel[tipo] = String(r.id);
+    desenhaTarjas();
+  } catch (e) {
+    if (!$('f-tit').value) { tipoForm(tipo); $('f-tit').value = titulo; $('f-sub').value = subtitulo; editando = id; }
+    throw e;
+  }
+});
+
+function desenhaLista() {
+  const b = $('busca').value.trim().toLowerCase();
+  const todas = GC.tarjas;
+  $('qtd').textContent = todas.length;
+  const l = todas.filter(t => (!filtro || t.tipo === filtro) && (!b || (t.titulo + ' ' + t.subtitulo).toLowerCase().includes(b)));
+  const e = GC.estado;
+  $('lista').innerHTML = l.length ? l.map(t => {
+    const ar = ['nome', 'tema'].some(tp => noAr(tp) && String(e[tp].id) === String(t.id));
+    const s = !REDACAO && String(sel[t.tipo]) === String(t.id);
+    return `<li class="${ar ? 'noar' : s ? 'sel' : ''}" data-id="${t.id}">
+      <div class="tx" data-a="sel"><b><span class="tp ${t.tipo}">${t.tipo === 'nome' ? 'NOME' : 'TEMA'}</span>${esc(t.titulo)}</b><span>${esc(t.subtitulo)}</span></div>
+      <div class="bt"><button data-a="sobe" title="Subir">↑</button><button data-a="desce" title="Descer">↓</button><button data-a="edita" title="Editar">✎</button><button data-a="apaga" title="Apagar">✕</button></div>
+    </li>`;
+  }).join('') : `<li class="vazio-lista" style="display:block">${todas.length ? 'Nada com esse filtro.' : 'A lista está vazia. Adicione a primeira tarja acima.'}</li>`;
+}
+$('lista').onclick = tenta(async ev => {
+  const a = ev.target.closest('[data-a]'); if (!a) return;
+  const li = a.closest('li'); const t = achar(li.dataset.id); if (!t) return;
+  const acao = a.dataset.a;
+  if (acao === 'sel') {
+    if (REDACAO) return;
+    sel[t.tipo] = String(t.id); mem.set('sel-' + t.tipo, sel[t.tipo]); desenhaTarjas();
+    $('c-' + t.tipo).scrollIntoView({ behavior: 'smooth', block: 'center' });
+  } else if (acao === 'edita') {
+    editando = t.id; tipoForm(t.tipo); $('f-tit').value = t.titulo; $('f-sub').value = t.subtitulo;
+    $('f-ok').textContent = 'Salvar alteração'; $('f-cancela').hidden = false;
+    $('form').scrollIntoView({ behavior: 'smooth', block: 'center' }); $('f-tit').focus();
+  } else if (acao === 'apaga') {
+    if (confirm(`Apagar a tarja "${t.titulo}"?`)) await GC.apagarTarja(t.id);
+  } else if (acao === 'sobe' || acao === 'desce') {
+    const ids = GC.tarjas.map(x => x.id), i = ids.indexOf(t.id), j = i + (acao === 'sobe' ? -1 : 1);
+    if (j < 0 || j >= ids.length) return;
+    [ids[i], ids[j]] = [ids[j], ids[i]];
+    await GC.ordenar(ids);
+  }
+});
+
+GC.on('tarjas', () => REDACAO ? desenhaLista() : desenhaTarjas());
+GC.on('estado', () => REDACAO ? desenhaEstado() : desenhaTarjas());
+tipoForm('nome');
+desenhaTarjas(); desenhaLista();
+GC.iniciar();
+</script>
+</body>
+</html>

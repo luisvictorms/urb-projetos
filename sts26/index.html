@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Siará Tech Summit 26 · urb.NEWS</title>
+<link rel="icon" href="img/selo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400..900&family=Strichpunkt+Sans:wdth,wght@100..200,400..900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../comum/site.css?v=20261006a">
+<style>
+  .heroi { padding: 34px 0 10px; display: grid; grid-template-columns: 1.1fr 1fr; gap: 28px; align-items: center; }
+  @media (max-width: 860px) { .heroi { grid-template-columns: 1fr; } }
+  .heroi h1 { font-family: "Strichpunkt Sans"; font-stretch: 200%; font-weight: 700; font-size: clamp(30px, 5vw, 52px); letter-spacing: 0; }
+  .heroi h1 small { display: block; font-family: Figtree; font-stretch: 100%; font-size: 16px; font-weight: 700; color: var(--acc2); letter-spacing: 2px; margin-bottom: 8px; }
+  .heroi p { color: var(--mut); margin-top: 12px; max-width: 520px; }
+  .heroi .chips { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 14px; }
+  .capa { border-radius: var(--r); overflow: hidden; border: 1px solid var(--line); aspect-ratio: 16/9; background: #1c2a55; }
+  .capa img { width: 100%; height: 100%; display: block; object-fit: cover; }
+
+  .sala { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; padding: 14px 16px; border-radius: var(--r);
+    background: linear-gradient(100deg, rgba(66,111,214,.22), rgba(235,2,132,.12)); border: 1px solid rgba(66,111,214,.45); }
+  .sala b { font-size: 14px; }
+  .sala .campo { flex: 1; min-width: 160px; max-width: 260px; }
+  .sala .sub { font-size: 13px; flex-basis: 100%; }
+
+  .ln { display: flex; flex-direction: column; }
+  .ln h3 { font-size: 16px; font-weight: 800; display: flex; gap: 8px; align-items: center; }
+  .ln p { color: var(--mut); font-size: 14px; margin-top: 4px; flex: 1; }
+  .ln .acoes { display: flex; gap: 8px; flex-wrap: wrap; }
+  .ico { width: 30px; height: 30px; border-radius: 8px; display: grid; place-items: center; background: var(--card2); font-size: 15px; flex: none; }
+  .ln.destaque { border-color: rgba(235,2,132,.55); background: linear-gradient(160deg, rgba(235,2,132,.12), var(--card) 60%); }
+
+  .telas { display: grid; gap: 18px; }
+  .tela { display: grid; grid-template-columns: 1.4fr 1fr; gap: 18px; align-items: start; }
+  @media (max-width: 860px) { .tela { grid-template-columns: 1fr; } }
+  .xadrez { position: relative; aspect-ratio: 16/9; border-radius: 10px; overflow: hidden; border: 1px solid var(--line);
+    background: repeating-conic-gradient(#3a3f4a 0 25%, #2c3039 0 50%) 0 0 / 22px 22px; }
+  .xadrez img { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .dias { display: flex; gap: 6px; margin: 10px 0; flex-wrap: wrap; }
+  .dias button.on { background: var(--acc); border-color: var(--acc); }
+  table { width: 100%; border-collapse: collapse; font-size: 13.5px; margin-top: 8px; }
+  th, td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--line); }
+  th { color: var(--mut); font-weight: 700; font-size: 12px; letter-spacing: .4px; }
+  td code { color: var(--tx); }
+
+  .demo { aspect-ratio: 16/9; border-radius: var(--r); overflow: hidden; border: 1px solid var(--line); }
+  .demo iframe { width: 100%; height: 100%; border: 0; display: block; }
+  .pecas { display: grid; grid-template-columns: 1.6fr 1fr; gap: 18px; }
+  @media (max-width: 860px) { .pecas { grid-template-columns: 1fr; } }
+  .pecas ul { list-style: none; display: grid; gap: 10px; }
+  .pecas li { font-size: 14px; color: var(--mut); }
+  .pecas li b { color: var(--tx); display: block; font-size: 15px; }
+
+  .cores { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 10px; }
+  .cor { border-radius: 10px; overflow: hidden; border: 1px solid var(--line); background: var(--card); cursor: pointer; }
+  .cor i { display: block; height: 64px; }
+  .cor span { display: block; padding: 7px 10px; font-size: 13px; font-weight: 700; }
+  .cor span small { display: block; color: var(--mut); font-weight: 600; font-family: ui-monospace, Consolas, monospace; }
+  .fonte { font-size: 34px; line-height: 1.1; margin: 6px 0 2px; }
+  ol.passos { padding-left: 20px; color: var(--mut); font-size: 14px; display: grid; gap: 6px; }
+  ol.passos b { color: var(--tx); }
+</style>
+</head>
+<body>
+<header class="topo"><div class="wrap">
+  <a class="marca" href="../">urb<span>/projetos</span></a>
+  <nav><a href="#vmix">vMix</a><a href="#telas">Telas</a><a href="#pecas">Peças</a><a href="#identidade">Identidade</a></nav>
+</div></header>
+
+<main class="wrap">
+  <div class="heroi">
+    <div>
+      <h1><small>URB.NEWS · EVENTO</small>SIARÁ TECH SUMMIT ‘26</h1>
+      <p>Pacote ao vivo da cobertura: telas de abertura, intervalo e tela dividida, mosquito AO VIVO, Inscreva-se e tarjas de nome e de tema, tudo controlado pelo celular durante a live.</p>
+      <div class="chips"><span class="chip on">Ativo</span><span class="chip">3 dias</span><span class="chip">1920×1080</span><span class="chip">vMix</span></div>
+    </div>
+    <div class="capa"><img src="img/tela-comecaremos-dia1.png" alt="Tela Começaremos em breve, dia 1"></div>
+  </div>
+
+  <section class="bloco" id="vmix">
+    <div class="cabec"><div><h2>Ao vivo no vMix</h2><div class="sub">Os links só funcionam com o código da sala (ele é a senha do controle — não publique).</div></div></div>
+    <form class="sala" id="fsala">
+      <b>Código da sala</b>
+      <input class="campo" id="sala" placeholder="sts26-xxxxxx" autocomplete="off" autocapitalize="off">
+      <button class="btn pri">Usar</button>
+      <button class="btn" type="button" id="ensaio" title="Sala de teste — mexer nela não afeta a live">Usar sala de ensaio</button>
+      <span class="sub" id="salainfo"></span>
+    </form>
+
+    <div class="grade" style="margin-top:14px" id="links"></div>
+
+    <div class="card" style="margin-top:14px">
+      <h3 style="font-size:16px;margin-bottom:8px">Como montar no vMix</h3>
+      <ol class="passos">
+        <li><b>Add Input → Web Browser</b>, cole a URL, tamanho <b>1920×1080</b>. O fundo das peças é transparente.</li>
+        <li>O <b>Overlay (todas as peças)</b> fica num canal de Overlay ligado o tempo todo; quem decide o que aparece é o controle remoto. Se preferir uma peça por input, use os overlays separados.</li>
+        <li>Nas telas <b>Intervalo</b> e <b>Dividida</b>, as janelas das câmeras são vazadas: monte as câmeras nas camadas de baixo (posições na tabela de cada tela) e a tela por cima.</li>
+        <li>O <b>dia do evento</b> (DIA 1/2/3) troca em todas as telas pelo controle. Para fixar um dia, use os PNGs abaixo.</li>
+        <li>Teste antes na <b>sala de ensaio</b>: é idêntica, mas separada da live.</li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="bloco" id="telas">
+    <div class="cabec"><div><h2>Telas · formatos base</h2><div class="sub">Geradas direto dos PSDs da arte. PNG 1920×1080 (janelas transparentes).</div></div></div>
+    <div class="telas" id="listaTelas"></div>
+  </section>
+
+  <section class="bloco" id="pecas">
+    <div class="cabec"><div><h2>Peças animadas</h2><div class="sub">Demonstração rodando sozinha (não mexe em nenhuma sala).</div></div>
+      <a class="btn" href="overlay.html?demo=1&fundo=1" target="_blank">Abrir em tela cheia ↗</a></div>
+    <div class="pecas">
+      <div class="demo"><iframe src="overlay.html?demo=1&fundo=1" title="Demonstração das peças" loading="lazy"></iframe></div>
+      <ul>
+        <li><b>Tarja nome</b>Nome + cargo/@. Estica sozinha para nomes longos. Entra e sai pelo controle, com saída automática opcional.</li>
+        <li><b>Tarja tema</b>Título + subtítulo de até 2 linhas. Ao entrar, tira a tarja nome (as duas ocupam a parte de baixo).</li>
+        <li><b>Mosquito AO VIVO</b>Liga/desliga; posição esquerda, centro ou direita.</li>
+        <li><b>Inscreva-se</b>Animação de ~7 s (Inscreva-se → Inscrito → sino), igual ao MOV da arte. Disparo pelo controle.</li>
+        <li><b>Lista de tarjas</b>O jornalista cadastra pela página da Redação; o operador escolhe no menu e coloca no ar.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="bloco" id="identidade">
+    <div class="cabec"><div><h2>Identidade</h2><div class="sub">Clique numa cor para copiar o código.</div></div></div>
+    <div class="cores" id="cores"></div>
+    <div class="grade" style="margin-top:14px">
+      <div class="card"><div class="sub" style="font-size:13px">Títulos e tarjas</div>
+        <div class="fonte" style="font-family:'Strichpunkt Sans';font-weight:700;font-stretch:112.5%">Strichpunkt Sans</div>
+        <div class="sub" style="font-size:13px;margin-bottom:10px">Regular · Medium · SemiBold · Bold · larguras Normal, SemiExpanded e UltraExpanded</div>
+        <a class="btn" href="https://fonts.google.com/specimen/Strichpunkt+Sans" target="_blank" rel="noopener">Google Fonts ↗</a></div>
+      <div class="card"><div class="sub" style="font-size:13px">Mosquito e Inscreva-se</div>
+        <div class="fonte" style="font-family:Figtree;font-weight:600">Figtree</div>
+        <div class="sub" style="font-size:13px;margin-bottom:10px">SemiBold</div>
+        <a class="btn" href="https://fonts.google.com/specimen/Figtree" target="_blank" rel="noopener">Google Fonts ↗</a></div>
+      <div class="card"><div class="sub" style="font-size:13px">Arquivos originais (Drive)</div>
+        <div class="acoes" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:10px">
+          <a class="btn" href="https://drive.google.com/open?id=1pXTdeeyd-bGkmz8jNyr7VnOwnxXGKbXQ" target="_blank" rel="noopener">Telas</a>
+          <a class="btn" href="https://drive.google.com/open?id=1A6yXueCYn6j9ZnZYjkQSbvL4g9UXnVcG" target="_blank" rel="noopener">Logos e cores</a>
+          <a class="btn" href="https://drive.google.com/open?id=1RNbLf3UWI20yNOnUZ1U7OQMkBvHmCKvP" target="_blank" rel="noopener">Tarja</a>
+          <a class="btn" href="https://drive.google.com/open?id=1gl08o43tAHDXpKrICZwnpEPBLJ3iSKNO" target="_blank" rel="noopener">Mosquito / Inscreva-se</a>
+        </div></div>
+    </div>
+  </section>
+</main>
+
+<footer class="rodape"><div class="wrap">urb.NEWS · Grupo Urbmídia — pacote do Siará Tech Summit 2026. Arte: Laysa.</div></footer>
+<div class="toast" id="toast"></div>
+
+<script>
+const ENSAIO = 'sts26-ensaio';
+const BASE = new URL('.', location.href).href;
+const $ = id => document.getElementById(id);
+const mem = { get(k) { try { return localStorage.getItem('sts26.' + k) || ''; } catch { return ''; } }, set(k, v) { try { localStorage.setItem('sts26.' + k, v); } catch {} } };
+let sala = new URLSearchParams(location.search).get('sala') || mem.get('sala');
+
+function toast(t) { const el = $('toast'); el.textContent = t; el.classList.add('vis'); clearTimeout(toast.t); toast.t = setTimeout(() => el.classList.remove('vis'), 1600); }
+async function copia(t) {
+  try { await navigator.clipboard.writeText(t); }
+  catch { const a = document.createElement('textarea'); a.value = t; document.body.appendChild(a); a.select(); document.execCommand('copy'); a.remove(); }
+  toast('Copiado');
+}
+
+const LINKS = [
+  { ico: '🎛️', t: 'Controle remoto', d: 'Operador: tarjas pelo menu, mosquito, Inscreva-se e dia do evento. Funciona no celular.', u: 'controle.html', abrir: true, destaque: true },
+  { ico: '✍️', t: 'Redação', d: 'Jornalista: só a lista de tarjas (cadastrar, editar, ordenar). Não coloca nada no ar.', u: 'controle.html', extra: '&modo=redacao', abrir: true },
+  { ico: '🧩', t: 'Overlay · todas as peças', d: 'Um input Web Browser com mosquito, Inscreva-se e as duas tarjas.', u: 'overlay.html' },
+  { ico: '🔴', t: 'Overlay · só mosquito', d: 'Mosquito AO VIVO em input próprio.', u: 'overlay.html', extra: '&so=mosquito' },
+  { ico: '👍', t: 'Overlay · só Inscreva-se', d: 'Inscreva-se em input próprio.', u: 'overlay.html', extra: '&so=inscreva' },
+  { ico: '🏷️', t: 'Overlay · só tarjas', d: 'Tarja nome e tarja tema.', u: 'overlay.html', extra: '&so=nome,tema' },
+  { ico: '⏳', t: 'Tela · Começaremos em breve', d: 'Segue o dia escolhido no controle.', u: 'tela.html', extra: '&t=comecaremos' },
+  { ico: '☕', t: 'Tela · Intervalo (câmera fixa)', d: 'Janela vazada para a câmera.', u: 'tela.html', extra: '&t=intervalo' },
+  { ico: '🪟', t: 'Tela · Dividida', d: '3 janelas vazadas + AO VIVO.', u: 'tela.html', extra: '&t=dividida' },
+];
+
+function desenhaLinks() {
+  const ok = sala && sala.length >= 6;
+  $('sala').value = sala || '';
+  $('salainfo').textContent = !ok ? 'Sem código: os links ficam desligados.' : sala === ENSAIO ? 'Sala de ENSAIO — pode testar à vontade.' : 'Sala da live ativa neste navegador.';
+  $('links').innerHTML = LINKS.map(l => {
+    const url = ok ? `${BASE}${l.u}?sala=${encodeURIComponent(sala)}${l.extra || ''}` : '';
+    return `<div class="card ln ${l.destaque ? 'destaque' : ''}">
+      <h3><span class="ico">${l.ico}</span>${l.t}</h3><p>${l.d}</p>
+      <span class="url">${ok ? url : '— informe o código da sala —'}</span>
+      <div class="acoes">
+        ${l.abrir ? `<a class="btn ${l.destaque ? 'rosa' : 'pri'} ${ok ? '' : 'off'}" href="${url || '#'}" target="_blank">Abrir</a>` : ''}
+        <button class="btn ${ok ? '' : 'off'}" data-copia="${url}">Copiar link</button>
+      </div></div>`;
+  }).join('');
+}
+$('links').onclick = e => { const b = e.target.closest('[data-copia]'); if (b) copia(b.dataset.copia); };
+$('fsala').onsubmit = e => { e.preventDefault(); sala = $('sala').value.trim(); mem.set('sala', sala); desenhaLinks(); };
+$('ensaio').onclick = () => { sala = ENSAIO; desenhaLinks(); };
+desenhaLinks();
+
+// ---------- telas ----------
+const TELAS = [
+  { id: 'comecaremos', t: 'Começaremos em breve', d: 'Abertura antes da live. Ponto vermelho pulsando na versão Web Browser.', jan: [] },
+  { id: 'intervalo', t: 'Intervalo · câmera fixa', d: 'Uma janela para a câmera fixa durante o intervalo.', jan: [['Câmera', 535, 170, 1310, 739]] },
+  { id: 'dividida', t: 'Tela dividida', d: 'Janela grande + 2 menores, com AO VIVO. A tarja tema entra pelo overlay.', jan: [['Principal', 666, 163, 1184, 669], ['Menor 1 (cima)', 71, 163, 579, 328], ['Menor 2 (baixo)', 71, 504, 579, 328]] },
+];
+$('listaTelas').innerHTML = TELAS.map(t => `
+  <div class="card tela" data-t="${t.id}">
+    <div class="xadrez"><img src="img/tela-${t.id}-dia1.png" alt="${t.t}" loading="lazy"></div>
+    <div>
+      <h3 style="font-size:18px">${t.t}</h3><p class="sub" style="font-size:14px">${t.d}</p>
+      <div class="dias">${[1, 2, 3].map(d => `<button class="btn ${d === 1 ? 'on' : ''}" data-dia="${d}">DIA ${d}</button>`).join('')}</div>
+      <a class="btn pri" data-baixar href="img/tela-${t.id}-dia1.png" download="STS26_${t.id.toUpperCase()}_DIA1.png">Baixar PNG do DIA 1</a>
+      ${t.jan.length ? `<table><tr><th>Janela</th><th>X</th><th>Y</th><th>Largura</th><th>Altura</th></tr>
+        ${t.jan.map(j => `<tr><td>${j[0]}</td>${j.slice(1).map(v => `<td><code>${v}</code></td>`).join('')}</tr>`).join('')}</table>
+        <p class="sub" style="font-size:12.5px;margin-top:6px">Em px no quadro 1920×1080 (cantos arredondados já vazados na arte).</p>` : ''}
+    </div>
+  </div>`).join('');
+$('listaTelas').onclick = e => {
+  const b = e.target.closest('[data-dia]'); if (!b) return;
+  const card = b.closest('.tela'), id = card.dataset.t, d = b.dataset.dia;
+  card.querySelectorAll('[data-dia]').forEach(x => x.classList.toggle('on', x === b));
+  card.querySelector('img').src = `img/tela-${id}-dia${d}.png`;
+  const a = card.querySelector('[data-baixar]');
+  a.href = `img/tela-${id}-dia${d}.png`; a.download = `STS26_${id.toUpperCase()}_DIA${d}.png`; a.textContent = `Baixar PNG do DIA ${d}`;
+};
+
+// ---------- cores ----------
+const CORES = [['Azul claro', '#426FD6'], ['Azul escuro', '#3154A1'], ['Rosa', '#EB0284'], ['Verde', '#01FD5F'], ['Grafite', '#373737'], ['Off-white', '#F0F0F0']];
+$('cores').innerHTML = CORES.map(([n, c]) => `<div class="cor" data-cor="${c}"><i style="background:${c}"></i><span>${n}<small>${c}</small></span></div>`).join('');
+$('cores').onclick = e => { const c = e.target.closest('[data-cor]'); if (c) copia(c.dataset.cor); };
+</script>
+</body>
+</html>

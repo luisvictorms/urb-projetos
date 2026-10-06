@@ -1,0 +1,329 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Overlay · Siará Tech Summit 26</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400..900&family=Strichpunkt+Sans:wdth,wght@100..200,400..900&display=block" rel="stylesheet">
+<style>
+  /* Overlay transparente 1920×1080 para Web Browser input do vMix.
+     ?sala=CODIGO  segue o controle remoto
+     &so=mosquito,inscreva,nome,tema  mostra só algumas peças (um input por peça, se preferir)
+     &demo=1  roda uma demonstração sozinho (sem sala)   &fundo=1  fundo xadrez de prévia */
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 100%; height: 100%; overflow: hidden; background: transparent; }
+  body.fundo { background: repeating-conic-gradient(#3a3f4a 0 25%, #2c3039 0 50%) 0 0 / 40px 40px; }
+  #palco { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; transform-origin: 0 0; }
+  .peca { position: absolute; visibility: hidden; }
+  .peca.vis { visibility: visible; }
+  .peca img { position: absolute; display: block; user-select: none; }
+
+  /* ---------- tarja nome (PSD TARJA NOME 913×198) ---------- */
+  #nome { left: 90px; top: 812px; width: 913px; height: 198px; }
+  /* a barra é CSS (mesmo degradê do PSD) pra poder esticar com nome comprido */
+  #nome .bar { position: absolute; left: 0; top: 8px; width: calc(var(--w, 913px) - 9px); height: 190px; border-radius: 12px;
+    background: linear-gradient(100deg, #426fd6, #3155a2); }
+  #nome .box { left: 10px; top: 19px; }
+  #nome .logo { left: 52px; top: 38px; }
+  #nome .seta { left: calc(var(--w, 913px) - 88px); top: 0; }
+  #nome .t1, #nome .t2 { position: absolute; left: 307px; white-space: nowrap; color: #fff; font-family: "Strichpunkt Sans"; font-stretch: 112.5%; line-height: 1; }
+  #nome .t1 { top: 37px; font-size: 54px; font-weight: 600; letter-spacing: -.2px; }
+  #nome .t2 { top: 101px; font-size: 43px; font-weight: 400; }
+
+  /* ---------- tarja tema (PSD TELA-DIVIDIDA, grupo TARJA-TEMA) ---------- */
+  #tema { left: 292px; top: 858px; width: 1336px; height: 171px; }
+  #tema .bar { left: 0; top: 7px; }
+  #tema .box { left: 8px; top: 14px; }
+  #tema .seta { left: 1261px; top: 0; }
+  #tema .t1, #tema .t2 { position: absolute; left: 257px; color: #fff; font-family: "Strichpunkt Sans"; line-height: 1; }
+  #tema .t1 { top: 16px; font-size: 50px; font-weight: 700; white-space: nowrap; }
+  #tema .t2 { top: 77px; width: 990px; font-size: 34px; font-weight: 500; line-height: 41px; }
+
+  /* ---------- mosquito AO VIVO (PSD MOSQUITO, grupo 03) ---------- */
+  #mosquito { width: 818px; height: 201px; top: 40px; transform-origin: 0 0; }
+  #mosquito.dir { left: calc(1920px - 50px - 818px * var(--s)); }
+  #mosquito.esq { left: 50px; }
+  #mosquito.centro { left: calc(960px - 409px * var(--s)); }
+  #mosquito { transform: scale(var(--s)); --s: .47; }
+  .selo { left: 0; top: 0; width: 201px; height: 201px; }
+  .pilula { position: absolute; left: 232px; top: 5px; width: 586px; height: 190px; border-radius: 95px; background: #373737;
+    display: flex; align-items: center; justify-content: center; color: #f0f0f0; font: 600 84px/1 Figtree, sans-serif; overflow: hidden; }
+  #mosquito .pilula span { letter-spacing: 1.7px; }
+
+  /* ---------- inscreva-se (MOV de referência: clareia → clica → Inscrito → sino) ---------- */
+  #inscreva { width: 1041px; height: 265px; transform-origin: 100% 0; transform: scale(var(--s)); --s: .45;
+    left: calc(1920px - 60px - 1041px); top: calc(1080px - 70px - 201px * var(--s)); }
+  #inscreva.esq { transform-origin: 0 0; left: 60px; }
+  #inscreva .pilula { background: #efefef; color: #373737; }
+  #inscreva .pilula span { position: absolute; }
+  #inscreva .p2 { color: #f0f0f0; opacity: 0; }
+  .circ { position: absolute; left: 840px; top: 0; width: 201px; height: 201px; border-radius: 50%; background: #efefef; }
+  .circ img { left: 49px; top: 43px; }
+  .circ .sino { left: 48px; top: 40px; opacity: 0; transform-origin: 50% 8%; }
+  .cursor { left: 0; top: 0; z-index: 3; transform-origin: 30% 10%; }
+</style>
+</head>
+<body>
+<div id="palco">
+  <div class="peca" id="nome">
+    <div class="bar"></div>
+    <img class="box" src="img/nome-box.png" alt="">
+    <img class="logo" src="img/nome-logo.png" alt="">
+    <div class="t1"></div><div class="t2"></div>
+    <img class="seta" src="img/nome-seta.png" alt="">
+  </div>
+
+  <div class="peca" id="tema">
+    <img class="bar" src="img/tema-fundo.png" alt="">
+    <img class="box" src="img/tema-box.png" alt="">
+    <div class="t1"></div><div class="t2"></div>
+    <img class="seta" src="img/tema-seta.png" alt="">
+  </div>
+
+  <div class="peca dir" id="mosquito">
+    <img class="selo" src="img/selo.png" alt="">
+    <div class="pilula"><span>AO VIVO</span></div>
+  </div>
+
+  <div class="peca" id="inscreva">
+    <div class="pilula"><span class="p1">Inscreva-se</span><span class="p2">Inscrito</span></div>
+    <img class="selo" src="img/selo.png" alt="">
+    <div class="circ"><img class="gostar" src="img/ico-gostar.png" alt=""><img class="sino" src="img/ico-sino.png" alt=""></div>
+    <img class="cursor" src="img/ico-clique.png" alt="">
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="../comum/gc.js?v=20261006a"></script>
+<script>
+const q = new URLSearchParams(location.search);
+const SO = (q.get('so') || 'mosquito,inscreva,nome,tema').split(',');
+if (q.get('fundo') === '1') document.body.classList.add('fundo');
+const $ = (s, el = document) => el.querySelector(s);
+const palco = $('#palco');
+
+function ajusta() {
+  const k = Math.min(innerWidth / 1920, innerHeight / 1080);
+  palco.style.transform = `translate(${(innerWidth - 1920 * k) / 2}px, ${(innerHeight - 1080 * k) / 2}px) scale(${k})`;
+}
+addEventListener('resize', ajusta); ajusta();
+
+const EASE = 'cubic-bezier(.22,.9,.24,1)';
+const espera = ms => new Promise(r => setTimeout(r, ms));
+
+// Uma "cena" = lista de passos {el, kf, dur, at}. Entrar toca em ordem; sair toca a mesma lista ao contrário.
+function toca(passos, { reverso = false, ritmo = 1 } = {}) {
+  const T = Math.max(...passos.map(p => p.at + p.dur));
+  const anims = passos.map(p => p.el.animate(p.kf, {
+    duration: p.dur * ritmo,
+    delay: (reverso ? T - p.at - p.dur : p.at) * ritmo,
+    easing: p.ease || EASE, fill: 'both', direction: reverso ? 'reverse' : 'normal',
+  }));
+  return Promise.all(anims.map(a => a.finished.catch(() => {}))).then(() => anims);
+}
+const limpa = el => el.getAnimations({ subtree: true }).forEach(a => a.cancel());
+
+// ---------- encaixe de texto (encolhe até caber) ----------
+// largura real do texto (scrollWidth arredonda e deixava "…" por meio pixel)
+function largura(el) { const r = document.createRange(); r.selectNodeContents(el); return r.getBoundingClientRect().width / escala() + 2; }
+const escala = () => palco.getBoundingClientRect().width / 1920;
+function cabe1(el, max, base, min) {
+  let s = base; el.style.fontSize = s + 'px'; el.style.maxWidth = 'none';
+  while (largura(el) > max && s > min) { s -= 1; el.style.fontSize = s + 'px'; }
+  el.style.maxWidth = max + 'px'; el.style.overflow = 'hidden'; el.style.textOverflow = 'ellipsis';
+}
+function cabe2(el, linhas, base, min) {
+  let s = base; const lh = r => Math.round(r * 1.2);
+  const set = v => { el.style.fontSize = v + 'px'; el.style.lineHeight = lh(v) + 'px'; };
+  set(s);
+  while (el.scrollHeight > lh(s) * linhas + 2 && s > min) set(--s);
+  if (linhas === 1 || !el.textContent) return;
+  // centraliza na vertical o bloco de 1 ou 2 linhas no espaço do subtítulo
+}
+
+// ---------- TARJAS ----------
+function cenaTarja(el, larg) {
+  const bar = $('.bar', el), box = $('.box', el), seta = $('.seta', el), logo = $('.logo', el);
+  const t1 = $('.t1', el), t2 = $('.t2', el);
+  const desl = -(larg - 120);
+  const p = [
+    { el: seta, at: 0, dur: 760, kf: [
+      { transform: `translateX(${desl}px) scale(.3)`, opacity: 0 },
+      { offset: .18, transform: `translateX(${desl}px) scale(1)`, opacity: 1 },
+      { transform: 'translateX(0) scale(1)', opacity: 1 }] },
+    { el: bar, at: 140, dur: 620, kf: [{ clipPath: 'inset(0 100% 0 0 round 12px)' }, { clipPath: 'inset(0 0% 0 0 round 12px)' }] },
+    { el: box, at: 560, dur: 380, kf: [{ clipPath: 'inset(0 100% 0 0)' }, { clipPath: 'inset(0 0% 0 0)' }] },
+    { el: t1, at: 700, dur: 480, kf: [{ transform: 'translateX(-46px)', filter: 'blur(10px)', opacity: 0 }, { transform: 'none', filter: 'blur(0)', opacity: 1 }] },
+    { el: t2, at: 820, dur: 480, kf: [{ transform: 'translateX(-46px)', filter: 'blur(10px)', opacity: 0 }, { transform: 'none', filter: 'blur(0)', opacity: 1 }] },
+  ];
+  if (logo) p.push({ el: logo, at: 760, dur: 380, kf: [{ transform: 'scale(.7)', opacity: 0 }, { transform: 'scale(1)', opacity: 1 }] });
+  return p;
+}
+
+function textoNome(d) {
+  const t1 = $('#nome .t1'), t2 = $('#nome .t2');
+  t1.textContent = d.titulo || ''; t2.textContent = d.subtitulo || '';
+  // a tarja estica pra caber o texto no tamanho do PSD; só encolhe a letra passado o limite da tela
+  [t1, t2].forEach(t => { t.style.maxWidth = 'none'; t.style.fontSize = ''; });
+  const MAXW = 1920 - 90 - 60, folga = 913 - 307 - 575;
+  const w = Math.min(MAXW, Math.max(913, Math.ceil(307 + Math.max(largura(t1), largura(t2)) + folga)));
+  NOME_W = w;
+  $('#nome').style.width = w + 'px';
+  $('#nome').style.setProperty('--w', w + 'px');
+  const caixa = w - 307 - folga;
+  cabe1(t1, caixa, 54, 30); cabe1(t2, caixa, 43, 26);
+  // sem subtítulo: título desce pro meio
+  t1.style.top = d.subtitulo ? '37px' : '70px';
+}
+function textoTema(d) {
+  const t1 = $('#tema .t1'), t2 = $('#tema .t2');
+  t1.textContent = d.titulo || ''; t2.textContent = d.subtitulo || '';
+  cabe1(t1, 1000, 50, 30);
+  cabe2(t2, 2, 34, 24);
+  // subtítulo de 1 linha ou sem subtítulo: reequilibra na vertical
+  const umaLinha = t2.scrollHeight <= parseFloat(t2.style.lineHeight) + 2;
+  if (!d.subtitulo) { t1.style.top = '55px'; }
+  else if (umaLinha) { t1.style.top = '34px'; t2.style.top = '96px'; }
+  else { t1.style.top = '16px'; t2.style.top = '77px'; }
+}
+
+// controlador genérico de peça com entrada/saída e troca de conteúdo
+function Peca(id, cena, texto) {
+  const el = document.getElementById(id);
+  let noAr = false, chave = null, fila = Promise.resolve(), timer = null;
+  const ativa = SO.includes(id);
+  async function entrar(d) {
+    if (!ativa) return;
+    if (noAr) await sair(true);
+    texto && texto(d);
+    limpa(el); el.classList.add('vis'); noAr = true;
+    await toca(cena(el));
+  }
+  async function sair(rapido) {
+    if (!noAr) return;
+    noAr = false;
+    await toca(cena(el), { reverso: true, ritmo: rapido ? .55 : .75 });
+    if (!noAr) { el.classList.remove('vis'); limpa(el); }
+  }
+  return {
+    // d = {on, t, titulo, subtitulo, dur}; chave = t (cada ENTRAR do controle gera um t novo)
+    aplica(d, inicial) {
+      d = d || {};
+      const nova = d.on ? String(d.t) : null;
+      if (nova === chave) return;
+      chave = nova;
+      clearTimeout(timer);
+      fila = fila.then(async () => {
+        if (!d.on) return sair();
+        // ao abrir o overlay, tarja com saída automática já passou — não reaparece
+        if (inicial && d.dur > 0) return;
+        await entrar(d);
+        if (d.dur > 0) timer = setTimeout(() => { if (chave === nova) { fila = fila.then(() => sair()); } }, d.dur * 1000);
+      });
+    },
+    get noAr() { return noAr; },
+  };
+}
+
+let NOME_W = 913;
+const NOME = Peca('nome', el => cenaTarja(el, NOME_W), textoNome);
+const TEMA = Peca('tema', el => cenaTarja(el, 1336), textoTema);
+
+// ---------- MOSQUITO ----------
+const mosq = $('#mosquito');
+const MOSQ = Peca('mosquito', el => [
+  { el: $('.selo', el), at: 0, dur: 520, ease: 'cubic-bezier(.34,1.56,.64,1)', kf: [{ transform: 'scale(0) rotate(-120deg)' }, { transform: 'scale(1) rotate(0)' }] },
+  { el: $('.pilula', el), at: 260, dur: 560, kf: [{ clipPath: 'inset(0 100% 0 0 round 95px)', transform: 'translateX(-120px)' }, { clipPath: 'inset(0 0% 0 0 round 95px)', transform: 'none' }] },
+  { el: $('.pilula span', el), at: 520, dur: 400, kf: [{ opacity: 0, transform: 'translateY(30px)' }, { opacity: 1, transform: 'none' }] },
+]);
+function posMosq(p) { mosq.classList.remove('dir', 'esq', 'centro'); mosq.classList.add(p || 'dir'); }
+
+// ---------- INSCREVA-SE ----------
+const insc = $('#inscreva');
+let inscRodando = false;
+async function inscreva() {
+  if (!SO.includes('inscreva') || inscRodando) return;
+  inscRodando = true;
+  const pil = $('.pilula', insc), p1 = $('.p1', insc), p2 = $('.p2', insc), selo = $('.selo', insc), circ = $('.circ', insc);
+  const gostar = $('.gostar', insc), sino = $('.sino', insc), cur = $('.cursor', insc);
+  // cursor: posições (canto superior esquerdo da imagem 130×153; a ponta do dedo fica em ~ (52,8))
+  const P = (x, y) => `translate(${x - 52}px, ${y - 8}px)`;
+  const pilC = [525, 120], sinoC = [940, 125], fora = [1150, 420];
+  limpa(insc); insc.classList.add('vis');
+  const bounce = 'cubic-bezier(.34,1.56,.64,1)';
+  const ent = [
+    { el: selo, at: 0, dur: 450, ease: bounce, kf: [{ transform: 'scale(0)' }, { transform: 'scale(1)' }] },
+    { el: pil, at: 150, dur: 480, kf: [{ transform: 'scaleX(.15)', opacity: 0 }, { transform: 'scaleX(1)', opacity: 1 }] },
+    { el: p1, at: 380, dur: 320, kf: [{ opacity: 0, filter: 'blur(8px)' }, { opacity: 1, filter: 'blur(0)' }] },
+    { el: circ, at: 260, dur: 450, ease: bounce, kf: [{ transform: 'scale(0)' }, { transform: 'scale(1)' }] },
+    { el: cur, at: 350, dur: 750, kf: [{ transform: P(...fora), opacity: 0 }, { offset: .3, opacity: 1 }, { transform: P(...pilC), opacity: 1 }] },
+  ];
+  toca(ent);
+  await espera(1250);
+  // clique 1: inscreve
+  cur.animate([{ transform: P(...pilC) + ' scale(1)' }, { transform: P(...pilC) + ' scale(.82)' }, { transform: P(...pilC) + ' scale(1)' }], { duration: 260, fill: 'both' });
+  await espera(120);
+  pil.animate([{ background: '#efefef' }, { background: '#373737' }], { duration: 260, fill: 'both' });
+  p1.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 200, fill: 'both' });
+  p2.animate([{ opacity: 0, filter: 'blur(6px)' }, { opacity: 1, filter: 'blur(0)' }], { duration: 300, delay: 80, fill: 'both' });
+  gostar.animate([{ opacity: 1, transform: 'scale(1)' }, { opacity: 0, transform: 'scale(.6)' }], { duration: 220, fill: 'both' });
+  sino.animate([{ opacity: 0, transform: 'scale(.6)' }, { opacity: 1, transform: 'scale(1)' }], { duration: 300, delay: 120, fill: 'both', easing: bounce });
+  await espera(450);
+  // vai pro sino
+  cur.animate([{ transform: P(...pilC) }, { transform: P(...sinoC) }], { duration: 520, easing: EASE, fill: 'both' });
+  await espera(620);
+  cur.animate([{ transform: P(...sinoC) + ' scale(1)' }, { transform: P(...sinoC) + ' scale(.82)' }, { transform: P(...sinoC) + ' scale(1)' }], { duration: 260, fill: 'both' });
+  await espera(140);
+  sino.animate([0, -22, 18, -14, 10, -6, 3, 0].map(r => ({ transform: `rotate(${r}deg)`, opacity: 1 })), { duration: 900, fill: 'both' });
+  await espera(500);
+  cur.animate([{ transform: P(...sinoC), opacity: 1 }, { transform: P(...fora), opacity: 0 }], { duration: 650, easing: 'ease-in', fill: 'both' });
+  await espera(3200);
+  // saída
+  const sai = [
+    { el: circ, at: 0, dur: 320, kf: [{ transform: 'scale(1)' }, { transform: 'scale(0)' }], ease: 'ease-in' },
+    { el: pil, at: 120, dur: 380, kf: [{ transform: 'scaleX(1)', opacity: 1 }, { transform: 'scaleX(.15)', opacity: 0 }], ease: 'ease-in' },
+    { el: selo, at: 360, dur: 320, kf: [{ transform: 'scale(1)' }, { transform: 'scale(0)' }], ease: 'ease-in' },
+  ];
+  await toca(sai);
+  insc.classList.remove('vis'); limpa(insc);
+  inscRodando = false;
+}
+
+// ---------- estado vindo do controle ----------
+let ultimoInsc = null, primeira = true;
+function aplica(e) {
+  const inicial = primeira; primeira = false;
+  posMosq(e.mosqPos);
+  insc.classList.toggle('esq', e.inscPos === 'esq');
+  MOSQ.aplica(e.mosquito ? { on: true, t: 'm' } : { on: false }, false);
+  NOME.aplica(e.nome, inicial);
+  TEMA.aplica(e.tema, inicial);
+  const ti = e.inscreva && e.inscreva.t;
+  if (ti && ultimoInsc !== null && ti !== ultimoInsc) inscreva();
+  ultimoInsc = ti || 0;
+}
+
+async function demo() {
+  const N = { titulo: 'Alexandre Medeiros', subtitulo: '@alemedeiros_oficial' };
+  const T = { titulo: 'Inteligência artificial no Nordeste', subtitulo: 'Como startups cearenses estão usando IA para resolver problemas reais da região' };
+  let n = 0;
+  while (true) {
+    aplica({ mosquito: true, nome: { on: true, t: ++n, ...N } }); await espera(5000);
+    aplica({ mosquito: true, nome: { on: false } }); await espera(1500);
+    aplica({ mosquito: true, inscreva: { t: ++n } }); await espera(7800);
+    aplica({ mosquito: true, tema: { on: true, t: ++n, ...T } }); await espera(5000);
+    aplica({ mosquito: false, tema: { on: false } }); await espera(2000);
+  }
+}
+
+document.fonts.load('600 54px "Strichpunkt Sans"').then(() => document.fonts.ready).then(() => {
+  if (q.get('demo') === '1') { ultimoInsc = 0; primeira = false; return demo(); }
+  if (q.get('estado')) { aplica(JSON.parse(q.get('estado'))); return; } // prévia estática
+  GC.on('estado', e => aplica(e));
+  GC.on('disparo', d => { if (d.nome === 'inscreva') { ultimoInsc = d.t; inscreva(); } });
+  GC.iniciar();
+});
+</script>
+</body>
+</html>
