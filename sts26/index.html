@@ -37,6 +37,7 @@
   @media (max-width: 860px) { .tela { grid-template-columns: 1fr; } }
   .xadrez { position: relative; aspect-ratio: 16/9; border-radius: 10px; overflow: hidden; border: 1px solid var(--line);
     background: repeating-conic-gradient(#3a3f4a 0 25%, #2c3039 0 50%) 0 0 / 22px 22px; }
+  .xadrez.vert { aspect-ratio: 9/16; max-width: 280px; margin: 0 auto; width: 100%; }
   .xadrez img { position: absolute; inset: 0; width: 100%; height: 100%; }
   .dias { display: flex; gap: 6px; margin: 10px 0; flex-wrap: wrap; }
   .dias button.on { background: var(--acc); border-color: var(--acc); }
@@ -174,6 +175,7 @@ const LINKS = [
   { ico: '⏳', t: 'Tela · Começaremos em breve', d: 'Animada em ciclo de 15 s. Segue o dia escolhido no controle.', u: 'tela.html', extra: '&t=comecaremos' },
   { ico: '☕', t: 'Tela · Intervalo (câmera fixa)', d: 'Janela vazada para a câmera.', u: 'tela.html', extra: '&t=intervalo' },
   { ico: '🪟', t: 'Tela · Dividida', d: '3 janelas vazadas.', u: 'tela.html', extra: '&t=dividida' },
+  { ico: '📱', t: 'Tela · Vertical (Instagram)', d: 'Moldura 1080×1920 com o meio vazado para o vídeo horizontal da live. Segue o dia do controle.', u: 'tela.html', extra: '&t=vertical' },
 ];
 
 function desenhaLinks() {
@@ -201,10 +203,11 @@ const TELAS = [
   { id: 'comecaremos', t: 'Começaremos em breve', d: 'Abertura antes da live, animada em ciclo de 15 s (entra, respira e sai — o fim emenda no começo). Use o link do Web Browser ou o MP4 do dia em loop.', jan: [], video: true },
   { id: 'intervalo', t: 'Intervalo · câmera fixa', d: 'Uma janela para a câmera fixa durante o intervalo.', jan: [['Câmera', 535, 170, 1310, 739]] },
   { id: 'dividida', t: 'Tela dividida', d: 'Janela grande + 2 menores. A tarja tema entra pelo overlay; se quiser o AO VIVO, ligue o mosquito no centro pelo controle.', jan: [['Principal', 666, 163, 1184, 669], ['Menor 1 (cima)', 71, 163, 579, 328], ['Menor 2 (baixo)', 71, 504, 579, 328]] },
+  { id: 'vertical', t: 'Vertical · Instagram', d: 'Moldura 1080×1920 para levar a live do YouTube para o Instagram: o vídeo horizontal (16:9) entra na janela vazada do meio, por baixo da moldura.', jan: [['Vídeo 16:9', 40, 660, 1000, 563]], vert: true },
 ];
 $('listaTelas').innerHTML = TELAS.map(t => `
   <div class="card tela" data-t="${t.id}">
-    <div class="xadrez">${t.video ? `<video src="video/STS26_COMECAREMOS_DIA1.mp4" muted loop autoplay playsinline poster="img/tela-comecaremos-dia1.png" style="position:absolute;inset:0;width:100%;height:100%"></video>` : `<img src="img/tela-${t.id}-dia1.png" alt="${t.t}" loading="lazy">`}</div>
+    <div class="xadrez${t.vert ? ' vert' : ''}">${t.video ? `<video src="video/STS26_COMECAREMOS_DIA1.mp4" muted loop autoplay playsinline poster="img/tela-comecaremos-dia1.png" style="position:absolute;inset:0;width:100%;height:100%"></video>` : `<img src="img/tela-${t.id}-dia1.png" alt="${t.t}" loading="lazy">`}</div>
     <div>
       <h3 style="font-size:18px">${t.t}</h3><p class="sub" style="font-size:14px">${t.d}</p>
       <div class="dias">${[1, 2, 3].map(d => `<button class="btn ${d === 1 ? 'on' : ''}" data-dia="${d}">DIA ${d}</button>`).join('')}</div>
@@ -212,7 +215,7 @@ $('listaTelas').innerHTML = TELAS.map(t => `
       ${t.video ? `<a class="btn rosa" data-video href="video/STS26_COMECAREMOS_DIA1.mp4" download>Baixar MP4 15 s do DIA 1</a>` : ''}
       ${t.jan.length ? `<table><tr><th>Janela</th><th>X</th><th>Y</th><th>Largura</th><th>Altura</th></tr>
         ${t.jan.map(j => `<tr><td>${j[0]}</td>${j.slice(1).map(v => `<td><code>${v}</code></td>`).join('')}</tr>`).join('')}</table>
-        <p class="sub" style="font-size:12.5px;margin-top:6px">Em px no quadro 1920×1080 (cantos arredondados já vazados na arte).</p>` : ''}
+        <p class="sub" style="font-size:12.5px;margin-top:6px">Em px no quadro ${t.vert ? '1080×1920' : '1920×1080'} (cantos arredondados já vazados na arte).</p>` : ''}
     </div>
   </div>`).join('');
 $('listaTelas').onclick = e => {
