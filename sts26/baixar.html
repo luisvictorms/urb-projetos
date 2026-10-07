@@ -1,0 +1,341 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Baixar tarjas · Siará Tech Summit 26</title>
+<link rel="icon" href="img/selo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400..900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../comum/site.css?v=20261007a">
+<style>
+  .topo2 { padding: 26px 0 6px; }
+  .topo2 h1 { font-size: clamp(26px, 4vw, 38px); }
+  .topo2 p { color: var(--mut); margin-top: 6px; max-width: 720px; }
+  .layout { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); gap: 18px; align-items: start; margin-top: 18px; }
+  @media (max-width: 900px) { .layout { grid-template-columns: 1fr; } }
+  .prev { position: sticky; top: 72px; }
+  .xadrez { position: relative; aspect-ratio: 16/9; border-radius: 10px; overflow: hidden; border: 1px solid var(--line);
+    background: repeating-conic-gradient(#3a3f4a 0 25%, #2c3039 0 50%) 0 0 / 22px 22px; }
+  .xadrez img { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .xadrez .vazio { position: absolute; inset: 0; display: grid; place-items: center; color: var(--mut); font-size: 14px; text-align: center; padding: 20px; }
+  .barra { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-top: 12px; }
+  .barra label { font-size: 13px; color: var(--mut); display: flex; align-items: center; gap: 6px; }
+  select.campo { padding: 8px 10px; font: inherit; font-size: 14px; color: var(--tx); background: var(--bg); border: 1px solid var(--line); border-radius: 10px; }
+  .prog { height: 6px; border-radius: 3px; background: var(--card2); overflow: hidden; margin-top: 12px; display: none; }
+  .prog i { display: block; height: 100%; width: 0; background: var(--acc2); transition: width .15s; }
+  .status { font-size: 13px; color: var(--mut); margin-top: 8px; min-height: 18px; }
+  .status.erro { color: #ff7b72; }
+  .avulsa { display: grid; gap: 8px; }
+  .avulsa .seg { justify-self: start; }
+  .avulsa .linha { display: flex; gap: 8px; flex-wrap: wrap; }
+  .avulsa .campo { width: 100%; }
+  .seg { display: inline-flex; background: var(--bg); border: 1px solid var(--line); border-radius: 10px; padding: 3px; gap: 3px; }
+  .seg button { font: inherit; font-size: 13px; font-weight: 700; padding: 6px 12px; border: 0; border-radius: 7px; background: transparent; color: var(--mut); cursor: pointer; }
+  .seg button.on { background: var(--acc); color: #fff; }
+  .filtros { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin: 16px 0 10px; }
+  .filtros .campo { flex: 1; min-width: 150px; }
+  ul { list-style: none; display: grid; gap: 8px; }
+  li { display: grid; grid-template-columns: auto 1fr auto; gap: 10px; align-items: center; padding: 10px 12px; border-radius: 12px;
+    background: var(--card); border: 1px solid var(--line); }
+  li.ativo { border-color: var(--acc); }
+  li input { width: 18px; height: 18px; accent-color: var(--acc); }
+  li .tx { min-width: 0; cursor: pointer; }
+  li .tx b { display: block; font-size: 15px; line-height: 1.25; overflow-wrap: anywhere; }
+  li .tx > span { display: block; font-size: 13px; color: var(--mut); overflow-wrap: anywhere; }
+  li .tp { display: inline-block; font-size: 10px; font-weight: 800; letter-spacing: 1px; padding: 2px 6px; border-radius: 5px; margin-right: 6px; background: #3154a1; color: #fff; vertical-align: 2px; }
+  li .tp.tema { background: #7a2a9a; }
+  li .bt { display: flex; gap: 6px; }
+  li .bt .btn { padding: 7px 10px; font-size: 13px; }
+  .vazio-lista { color: var(--mut); text-align: center; padding: 22px; border: 1px dashed var(--line); border-radius: 12px; font-size: 14px; }
+  .sala { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+  .sala[hidden] { display: none; }
+  #palcoExp { position: fixed; left: -30000px; top: 0; width: 1920px; height: 1080px; border: 0; }
+  .nota { font-size: 12.5px; color: var(--mut); margin-top: 10px; line-height: 1.5; }
+</style>
+</head>
+<body>
+<header class="topo"><div class="wrap">
+  <a class="marca" href="../">urb<span>/projetos</span></a>
+  <nav><a href="./">Siará Tech Summit ‘26</a></nav>
+</div></header>
+
+<main class="wrap">
+  <div class="topo2">
+    <h1>Baixar tarjas</h1>
+    <p>Gera as tarjas da lista (as mesmas que a redação cadastra no controle) em <b>PNG transparente</b> ou <b>MOV animado com transparência</b> (entra, fica e sai), no tamanho 1920×1080 e na posição da tela.</p>
+  </div>
+
+  <form class="card sala" id="fsala" hidden>
+    <b>Código da sala</b>
+    <input class="campo" id="sala" placeholder="sts26-xxxxxx" autocomplete="off" autocapitalize="off" style="flex:1;min-width:160px;max-width:260px">
+    <button class="btn pri">Entrar</button>
+    <span class="sub" style="font-size:13px">Sem o código dá para gerar só tarjas avulsas (abaixo).</span>
+  </form>
+
+  <div class="layout">
+    <div>
+      <section class="card">
+        <h2 style="font-size:17px">Tarja avulsa</h2>
+        <p class="sub" style="font-size:13px;margin-bottom:10px">Para uma tarja que não está na lista. Não salva nada.</p>
+        <form class="avulsa" id="favulsa">
+          <div class="seg" id="atipo"><button type="button" data-v="nome" class="on">Nome</button><button type="button" data-v="tema">Tema</button></div>
+          <input class="campo" id="atit" maxlength="160" placeholder="Nome da pessoa">
+          <input class="campo" id="asub" maxlength="300" placeholder="Cargo, empresa ou @perfil">
+          <div class="linha">
+            <button class="btn" type="button" data-a="ver">Prévia</button>
+            <button class="btn pri" type="button" data-a="png">Baixar PNG</button>
+            <button class="btn rosa" type="button" data-a="mov">Baixar MOV</button>
+          </div>
+        </form>
+      </section>
+
+      <div class="filtros">
+        <div class="seg" id="filtro"><button data-v="" class="on">Todas</button><button data-v="nome">Nomes</button><button data-v="tema">Temas</button></div>
+        <input class="campo" id="busca" placeholder="Buscar…" autocomplete="off">
+      </div>
+      <div class="barra" style="margin:0 0 10px">
+        <label><input type="checkbox" id="todas"> Marcar todas</label>
+        <button class="btn pri" id="zipPng" disabled>Baixar marcadas · PNG (.zip)</button>
+        <button class="btn rosa" id="zipMov" disabled>Baixar marcadas · MOV (.zip)</button>
+      </div>
+      <ul id="lista"></ul>
+    </div>
+
+    <div class="prev">
+      <section class="card">
+        <div class="xadrez" id="xadrez"><div class="vazio">Clique numa tarja para ver a prévia.</div></div>
+        <div class="barra">
+          <label>Tempo parado no MOV
+            <select class="campo" id="segura"><option value="3000">3 s</option><option value="4000" selected>4 s</option><option value="6000">6 s</option><option value="8000">8 s</option><option value="10000">10 s</option></select>
+          </label>
+          <span class="sub" style="font-size:13px" id="duracao"></span>
+        </div>
+        <div class="prog" id="prog"><i></i></div>
+        <div class="status" id="status"></div>
+        <p class="nota">
+          <b>PNG:</b> 1920×1080 com fundo transparente, a tarja já na posição da live.<br>
+          <b>MOV:</b> codec Animation (qtrle) com alfa, 30 fps — abre no Premiere, After, Resolve e vMix. Na 1ª vez o navegador baixa o conversor (~30 MB) e o vídeo leva de 20 s a 1 min para ficar pronto. Deixe esta aba na frente enquanto gera.
+        </p>
+      </section>
+    </div>
+  </div>
+</main>
+<footer class="rodape"><div class="wrap">urb.NEWS · Siará Tech Summit ‘26</div></footer>
+
+<iframe id="palcoExp" src="overlay.html?export=1" title="" aria-hidden="true" tabindex="-1"></iframe>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="../comum/gc.js?v=20261007a"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script type="module">import { FFmpeg } from '../comum/vendor/ffmpeg/index.js'; window.FFmpegWASM = { FFmpeg };</script>
+<script>
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const FPS = 30;
+const PH = { nome: ['Nome da pessoa', 'Cargo, empresa ou @perfil'], tema: ['Título do tema', 'Subtítulo (até 2 linhas)'] };
+
+// nome do arquivo: STS26_TARJA-NOME_ALEXANDRE-MEDEIROS
+const slug = s => String(s).normalize('NFD').replace(/[̀-ͯ]/g, '').toUpperCase().replace(/[^A-Z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 50) || 'SEM-TITULO';
+const nomeArq = t => `STS26_TARJA-${t.tipo.toUpperCase()}_${slug(t.titulo)}`;
+
+function baixa(blob, nome) {
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = nome;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 60000);
+}
+const st = (t, erro) => { $('status').textContent = t || ''; $('status').classList.toggle('erro', !!erro); };
+const prog = v => { $('prog').style.display = v == null ? 'none' : 'block'; $('prog').firstElementChild.style.width = ((v || 0) * 100) + '%'; };
+
+// ---------- palco de exportação (overlay.html?export=1 num iframe invisível) ----------
+const palco = new Promise(res => {
+  const f = $('palcoExp');
+  const espera = () => f.contentWindow && f.contentWindow.pronto ? res(f.contentWindow.exportador) : setTimeout(espera, 100);
+  f.addEventListener('load', espera);
+});
+const toBlob = c => new Promise(r => c.toBlob(r, 'image/png'));
+let ocupado = false;
+async function trava(fn) {
+  if (ocupado) { st('Espere terminar o arquivo atual.'); return; }
+  ocupado = true; document.body.style.cursor = 'progress';
+  try { await fn(); } catch (e) { console.error(e); st('Não deu certo: ' + (e.message || e), true); prog(null); }
+  finally { ocupado = false; document.body.style.cursor = ''; }
+}
+
+// PNG = quadro final da entrada (tarja inteira parada)
+async function gerarPng(t) {
+  const ex = await palco;
+  const tm = ex.preparar(t.tipo, t);
+  ex.ir(tm.entrada + 30);
+  return toBlob(await ex.quadro());
+}
+async function mostra(t) {
+  const blob = await gerarPng(t);
+  const url = URL.createObjectURL(blob);
+  $('xadrez').innerHTML = `<img src="${url}" alt="Prévia da tarja">`;
+  const tm = (await palco).preparar(t.tipo, t, +$('segura').value);
+  $('duracao').textContent = `MOV com ${(tm.fim / 1000).toFixed(1)} s`;
+  return blob;
+}
+
+// ---------- MOV com alfa (ffmpeg.wasm, codec qtrle) ----------
+let ffmpeg = null;
+// baixa o núcleo do ffmpeg e entrega como blob: (o worker não aceita script de outro domínio)
+const blobURL = async (url, tipo) => URL.createObjectURL(new Blob([await (await fetch(url)).arrayBuffer()], { type: tipo }));
+async function conversor() {
+  if (ffmpeg) return ffmpeg;
+  st('Carregando o conversor de vídeo (só na 1ª vez, ~30 MB)…');
+  const ff = new FFmpegWASM.FFmpeg();
+  const base = 'https://unpkg.com/@ffmpeg/core@0.12.10/dist/esm';
+  await ff.load({
+    classWorkerURL: new URL('../comum/vendor/ffmpeg/worker.js', location.href).href,
+    coreURL: await blobURL(`${base}/ffmpeg-core.js`, 'text/javascript'),
+    wasmURL: await blobURL(`${base}/ffmpeg-core.wasm`, 'application/wasm'),
+  });
+  ffmpeg = ff;
+  return ff;
+}
+async function gerarMov(t, aviso = '') {
+  const ff = await conversor();
+  const ex = await palco;
+  const tm = ex.preparar(t.tipo, t, +$('segura').value);
+  const n = Math.ceil(tm.fim / 1000 * FPS) + 1;
+  const nomes = [];
+  let parado = null;
+  for (let i = 0; i < n; i++) {
+    const ms = i * 1000 / FPS;
+    const nome = `q${String(i).padStart(4, '0')}.png`;
+    // no trecho parado todos os quadros são iguais: captura uma vez só
+    const noMeio = ms > tm.entrada + 40 && ms < tm.base - 5;
+    let dados;
+    if (noMeio && parado) dados = parado;
+    else {
+      ex.ir(ms);
+      dados = new Uint8Array(await (await toBlob(await ex.quadro())).arrayBuffer());
+      if (noMeio) parado = dados;
+    }
+    await ff.writeFile(nome, dados === parado ? dados.slice() : dados); // writeFile transfere (e esvazia) o buffer
+    nomes.push(nome);
+    prog(i / n * .85);
+    st(`${aviso}Desenhando quadros ${i + 1}/${n}…`);
+  }
+  st(`${aviso}Montando o MOV…`);
+  await ff.exec(['-framerate', String(FPS), '-i', 'q%04d.png', '-c:v', 'qtrle', '-pix_fmt', 'argb', '-r', String(FPS), 'saida.mov']);
+  const out = await ff.readFile('saida.mov');
+  for (const x of nomes) await ff.deleteFile(x).catch(() => {});
+  await ff.deleteFile('saida.mov').catch(() => {});
+  prog(1);
+  return new Blob([out.buffer], { type: 'video/quicktime' });
+}
+
+// ---------- tarja avulsa ----------
+let aTipo = 'nome';
+$('atipo').onclick = e => {
+  const b = e.target.closest('[data-v]'); if (!b) return;
+  aTipo = b.dataset.v;
+  $('atipo').querySelectorAll('button').forEach(x => x.classList.toggle('on', x === b));
+  $('atit').placeholder = PH[aTipo][0]; $('asub').placeholder = PH[aTipo][1];
+};
+$('favulsa').onclick = e => {
+  const b = e.target.closest('[data-a]'); if (!b) return;
+  const t = { tipo: aTipo, titulo: $('atit').value.trim(), subtitulo: $('asub').value.trim() };
+  if (!t.titulo) { $('atit').focus(); return; }
+  acao(b.dataset.a, t);
+};
+$('favulsa').onsubmit = e => e.preventDefault();
+
+function acao(a, t) {
+  return trava(async () => {
+    if (a === 'ver') { st('Gerando prévia…'); await mostra(t); st(''); }
+    else if (a === 'png') { st('Gerando PNG…'); baixa(await mostra(t), nomeArq(t) + '.png'); st('PNG baixado: ' + nomeArq(t) + '.png'); }
+    else if (a === 'mov') {
+      await mostra(t);
+      const blob = await gerarMov(t);
+      baixa(blob, nomeArq(t) + '.mov');
+      st(`MOV baixado: ${nomeArq(t)}.mov (${(blob.size / 1048576).toFixed(1)} MB)`); prog(null);
+    }
+  });
+}
+
+// ---------- lista da sala ----------
+let filtro = '', marcadas = new Set(), ativa = null;
+function visiveis() {
+  const b = $('busca').value.trim().toLowerCase();
+  return GC.tarjas.filter(t => (!filtro || t.tipo === filtro) && (!b || (t.titulo + ' ' + t.subtitulo).toLowerCase().includes(b)));
+}
+function desenha() {
+  const l = visiveis();
+  $('lista').innerHTML = l.length ? l.map(t => `
+    <li class="${ativa === t.id ? 'ativo' : ''}" data-id="${t.id}">
+      <input type="checkbox" data-a="marca" ${marcadas.has(t.id) ? 'checked' : ''} aria-label="Marcar">
+      <div class="tx" data-a="ver"><b><span class="tp ${t.tipo}">${t.tipo === 'nome' ? 'NOME' : 'TEMA'}</span>${esc(t.titulo)}</b><span>${esc(t.subtitulo)}</span></div>
+      <div class="bt"><button class="btn" data-a="png">PNG</button><button class="btn rosa" data-a="mov">MOV</button></div>
+    </li>`).join('')
+    : `<li class="vazio-lista" style="display:block">${!GC.ativo() ? 'Informe o código da sala para ver a lista.' : GC.tarjas.length ? 'Nada com esse filtro.' : 'A lista está vazia — cadastre pelo controle (Redação).'}</li>`;
+  const n = [...marcadas].filter(id => GC.tarjas.some(t => t.id === id)).length;
+  $('zipPng').disabled = $('zipMov').disabled = !n;
+  $('zipPng').textContent = `Baixar marcadas · PNG (.zip)${n ? ' · ' + n : ''}`;
+  $('zipMov').textContent = `Baixar marcadas · MOV (.zip)${n ? ' · ' + n : ''}`;
+  $('todas').checked = l.length > 0 && l.every(t => marcadas.has(t.id));
+}
+$('lista').onclick = e => {
+  const b = e.target.closest('[data-a]'); if (!b) return;
+  const t = GC.tarjas.find(x => String(x.id) === b.closest('li').dataset.id); if (!t) return;
+  if (b.dataset.a === 'marca') { b.checked ? marcadas.add(t.id) : marcadas.delete(t.id); desenha(); return; }
+  ativa = t.id; desenha();
+  acao(b.dataset.a, t);
+};
+$('todas').onchange = e => { visiveis().forEach(t => e.target.checked ? marcadas.add(t.id) : marcadas.delete(t.id)); desenha(); };
+$('filtro').onclick = e => {
+  const b = e.target.closest('[data-v]'); if (!b) return;
+  filtro = b.dataset.v; $('filtro').querySelectorAll('button').forEach(x => x.classList.toggle('on', x === b)); desenha();
+};
+$('busca').oninput = desenha;
+$('segura').onchange = () => { if (ativa) { const t = GC.tarjas.find(x => x.id === ativa); if (t) trava(() => mostra(t)); } };
+
+async function zip(tipoArq) {
+  const sel = GC.tarjas.filter(t => marcadas.has(t.id));
+  if (!sel.length) return;
+  trava(async () => {
+    const z = new JSZip(), usados = {};
+    for (let i = 0; i < sel.length; i++) {
+      const t = sel[i];
+      let nome = nomeArq(t);
+      usados[nome] = (usados[nome] || 0) + 1;
+      if (usados[nome] > 1) nome += '-' + usados[nome];
+      const aviso = `[${i + 1}/${sel.length}] `;
+      if (tipoArq === 'png') { st(aviso + 'Gerando ' + nome); prog(i / sel.length); z.file(nome + '.png', await gerarPng(t)); }
+      else z.file(nome + '.mov', await gerarMov(t, aviso));
+    }
+    st('Compactando…');
+    const blob = await z.generateAsync({ type: 'blob', compression: 'STORE' });
+    const d = new Date(), dd = String(d.getDate()).padStart(2, '0') + String(d.getMonth() + 1).padStart(2, '0') + d.getFullYear();
+    baixa(blob, `STS26_TARJAS_${tipoArq.toUpperCase()}_${dd}.zip`);
+    st(`ZIP baixado com ${sel.length} tarja(s).`); prog(null);
+  });
+}
+$('zipPng').onclick = () => zip('png');
+$('zipMov').onclick = () => zip('mov');
+
+// sala: da URL ou a mesma usada no controle/página do projeto
+const mem = { get(k) { try { return localStorage.getItem('sts26.' + k) || ''; } catch { return ''; } } };
+if (!GC.ativo()) {
+  const s = mem.get('sala');
+  if (s.length >= 6) { const q = new URLSearchParams(location.search); q.set('sala', s); location.replace('?' + q); }
+  else { $('fsala').hidden = false; desenha(); }
+} else {
+  GC.on('tarjas', desenha);
+  GC.iniciar();
+  desenha();
+}
+$('fsala').onsubmit = e => {
+  e.preventDefault();
+  const c = $('sala').value.trim(); if (c.length < 6) return;
+  try { localStorage.setItem('sts26.sala', c); } catch {}
+  const q = new URLSearchParams(location.search); q.set('sala', c); location.search = q.toString();
+};
+</script>
+</body>
+</html>

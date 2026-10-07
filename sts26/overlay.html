@@ -103,7 +103,9 @@ if (q.get('fundo') === '1') document.body.classList.add('fundo');
 const $ = (s, el = document) => el.querySelector(s);
 const palco = $('#palco');
 
+const EXPORT = q.get('export') === '1'; // usado pela página baixar.html (quadro a quadro, tamanho real)
 function ajusta() {
+  if (EXPORT) { palco.style.transform = 'none'; return; }
   const k = Math.min(innerWidth / 1920, innerHeight / 1080);
   palco.style.transform = `translate(${(innerWidth - 1920 * k) / 2}px, ${(innerHeight - 1080 * k) / 2}px) scale(${k})`;
 }
@@ -317,7 +319,39 @@ async function demo() {
   }
 }
 
+// ---------- exportação (baixar.html carrega esta página com ?export=1 num iframe) ----------
+// Monta a tarja com entrada + tempo parado + saída, tudo pausado; ir(ms) posiciona; quadro() devolve o canvas transparente.
+let expAnims = [], fontCSS = null;
+window.exportador = {
+  preparar(tipo, d, segura = 4000) {
+    document.querySelectorAll('.peca').forEach(p => { limpa(p); p.classList.remove('vis'); });
+    const el = document.getElementById(tipo);
+    (tipo === 'nome' ? textoNome : textoTema)(d);
+    el.classList.add('vis');
+    const larg = tipo === 'nome' ? NOME_W : 1336, R = .75;
+    const ent = cenaTarja(el, larg), Tin = Math.max(...ent.map(p => p.at + p.dur)), base = Tin + segura;
+    expAnims = ent.map(p => p.el.animate(p.kf, { duration: p.dur, delay: p.at, easing: p.ease || EASE, fill: 'both' }));
+    // saída = a mesma cena ao contrário; 'forwards' pra não interferir antes de começar
+    expAnims.push(...cenaTarja(el, larg).map(p => p.el.animate(p.kf, {
+      duration: p.dur * R, delay: base + (Tin - p.at - p.dur) * R, easing: p.ease || EASE, fill: 'forwards', direction: 'reverse' })));
+    expAnims.forEach(a => a.pause());
+    return { entrada: Tin, base, fim: base + Tin * R };
+  },
+  ir(ms) { expAnims.forEach(a => { a.currentTime = ms; }); },
+  async quadro() {
+    if (!fontCSS) fontCSS = await htmlToImage.getFontEmbedCSS(palco);
+    return htmlToImage.toCanvas(palco, { width: 1920, height: 1080, pixelRatio: 1, fontEmbedCSS: fontCSS });
+  },
+};
+
 document.fonts.load('600 54px "Strichpunkt Sans"').then(() => document.fonts.ready).then(() => {
+  if (EXPORT) {
+    const s = document.createElement('script');
+    s.src = 'https://cdn.jsdelivr.net/npm/html-to-image@1.11.13/dist/html-to-image.js';
+    s.onload = () => { window.pronto = true; };
+    document.head.appendChild(s);
+    return;
+  }
   if (q.get('demo') === '1') { ultimoInsc = 0; primeira = false; return demo(); }
   if (q.get('estado')) { aplica(JSON.parse(q.get('estado'))); return; } // prévia estática
   GC.on('estado', e => aplica(e));

@@ -150,7 +150,7 @@ const blocoTarja = (tipo, rot) => `
 
 const blocoLista = `
   <section class="card" id="c-lista">
-    <div class="tit">LISTA DE TARJAS<span class="tag" id="qtd">0</span></div>
+    <div class="tit">LISTA DE TARJAS<a class="tag" id="baixar" href="#" target="_blank" style="text-decoration:none;color:var(--tx);margin-right:6px">⬇ BAIXAR PNG/MOV</a><span class="tag" id="qtd" style="margin-left:0">0</span></div>
     <form class="form" id="form">
       <div class="seg" id="f-tipo"><button type="button" data-v="nome" class="on">Nome</button><button type="button" data-v="tema">Tema</button></div>
       <input id="f-tit" maxlength="160" placeholder="Nome da pessoa" autocomplete="off">
@@ -391,6 +391,7 @@ $('lista').onclick = tenta(async ev => {
 });
 
 GC.on('tarjas', () => REDACAO ? desenhaLista() : desenhaTarjas());
+$('baixar').href = 'baixar.html?sala=' + encodeURIComponent(GC.sala);
 GC.on('estado', () => REDACAO ? desenhaEstado() : desenhaTarjas());
 tipoForm('nome');
 desenhaTarjas(); desenhaLista();
