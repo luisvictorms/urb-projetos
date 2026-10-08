@@ -18,7 +18,7 @@ Site: https://luisvictorms.github.io/urb-projetos/
 
 - `index.html`: página do projeto (links do vMix, telas, peças, identidade).
 - `controle.html?sala=…`: controle remoto do operador. Com `&modo=redacao`, fica só a lista de tarjas, para o jornalista.
-- `overlay.html?sala=…`: overlay transparente 1920×1080 para o Web Browser input do vMix. `&so=mosquito,inscreva,nome,tema` filtra as peças, `&demo=1` roda uma demonstração e `&fundo=1` mostra o xadrez de prévia.
+- `overlay.html?sala=…`: overlay transparente 1920×1080 para o Web Browser input do vMix. `&so=mosquito,inscreva,nome,tema` filtra as peças (a página do projeto já lista `&so=nome` = tarja de convidados e `&so=tema` = tarja de temas, cada uma no seu input), `&demo=1` roda uma demonstração e `&fundo=1` mostra o xadrez de prévia.
 - `baixar.html?sala=…`: baixa as tarjas da lista (ou avulsas) em PNG transparente 1920×1080 ou MOV animado com alfa (qtrle, 30 fps). Os quadros vêm do `overlay.html?export=1` (html-to-image) e o MOV é montado no navegador com ffmpeg.wasm (`comum/vendor/ffmpeg`, versão ESM; o núcleo vem do unpkg).
 - `tela.html?t=comecaremos|intervalo|dividida&sala=…`: telas cheias que seguem o dia escolhido no controle (`&dia=N` fixa o dia).
 
